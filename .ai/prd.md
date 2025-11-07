@@ -6,7 +6,7 @@ Celem projektu 10xCards jest stworzenie aplikacji internetowej, która minimaliz
 
 ## 2. Problem użytkownika
 
-Manualne tworzenie wysokiej jakości fiszek jest procesem żmudnym, czasochłonnym i często zniechęcającym. Studenci, zwłaszcza na kierunkach technicznych i medycznych, muszą przyswajać ogromne ilości informacji, a bariera związana z przygotowaniem materiałów do nauki sprawia, że rezygnują z jednej z najskuteczniejszych metod zapamiętywania. Brak jest prostego i szybkiego narzędzia, które automatyzuje ten proces od początku do końca.
+Manualne tworzenie wysokiej jakości fiszek jest procesem żmudnym, czasochłonnym i często zniechęcającym. Studenci, zwłaszcza na kierunkach lingwistycznych, technicznych i medycznych, muszą przyswajać ogromne ilości informacji, a bariera związana z przygotowaniem materiałów do nauki sprawia, że rezygnują z jednej z najskuteczniejszych metod zapamiętywania. Brak jest prostego i szybkiego narzędzia, które automatyzuje ten proces od początku do końca.
 
 ## 3. Wymagania funkcjonalne
 
@@ -18,7 +18,7 @@ Manualne tworzenie wysokiej jakości fiszek jest procesem żmudnym, czasochłonn
 - F-006: Możliwość manualnego tworzenia fiszek.
 - F-007: Możliwość dodawania obrazków do fiszek poprzez link URL.
 - F-008: Organizacja fiszek w zbiory zwane "taliami".
-- F-009: Dwa tryby nauki: "Tryb treningu" (spaced repetition) i "Tryb nauki" (swobodne przeglądanie).
+- F-009: Dwa tryby nauki: "Tryb treningu" (spaced repetition) i "Tryb nauki" (swobodne przeglądanie - widoczna tylko prawidłowa odpowiedź).
 - F-010: Algorytm powtórek oparty na prostym mechanizmie (poprawna odpowiedź wydłuża interwał, błędna go resetuje).
 - F-011: Automatyczne archiwizowanie fiszek po 30 kolejnych poprawnych odpowiedziach (status "Opanowana").
 - F-012: Pulpit główny z listą talii i informacją o liczbie fiszek do powtórki.
@@ -37,6 +37,7 @@ Manualne tworzenie wysokiej jakości fiszek jest procesem żmudnym, czasochłonn
 - Dodawanie obrazków przez URL.
 
 ### Poza zakresem MVP:
+- Aplikacja dla ANBERNIC RG40XX V.
 - Aplikacje mobilne.
 - Import plików (PDF, DOCX).
 - Współdzielenie talii między użytkownikami.
@@ -100,8 +101,8 @@ Manualne tworzenie wysokiej jakości fiszek jest procesem żmudnym, czasochłonn
   3. Jeśli nie mam żadnych talii, widzę ekran powitalny z zachętą do stworzenia pierwszej.
 
 - ID: US-007
-- Tytuł: Usuwanie talii lub fiszek
-- Opis: Jako użytkownik, chcę móc usunąć wybraną talię lub fiszkę, aby pozbyć się niepotrzebnych materiałów.
+- Tytuł: Usuwanie talii lub wybranych fiszek
+- Opis: Jako użytkownik, chcę móc usunąć wybraną talię lub wybraną fiszkę w talii, aby pozbyć się niepotrzebnych materiałów.
 - Kryteria akceptacji:
   1. Przy każdej talii znajduje się opcja jej usunięcia.
   2. Przy każdej fiszce w trybie nauki znajduje się opcja jej usunięcia.
@@ -130,7 +131,7 @@ Manualne tworzenie wysokiej jakości fiszek jest procesem żmudnym, czasochłonn
 - Opis: Jako użytkownik, chcę widzieć, jaką dziedzinę wiedzy wykryło AI i mieć możliwość jej zmiany, aby poprawić jakość generowanych odpowiedzi.
 - Kryteria akceptacji:
   1. Na ekranie weryfikacji wyświetlana jest informacja "Wykryta dziedzina: [nazwa]. [Zmień]".
-  2. Kliknięcie "Zmień" pozwala na wpisanie innej dziedziny.
+  2. Kliknięcie "Zmień" pozwala na wpisanie innej dziedziny z wcześniej zdefiniowanych z rozwijalnego menu lub dodanie nowej.
 
 - ID: US-011
 - Tytuł: Regeneracja błędnych odpowiedzi
