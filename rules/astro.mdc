@@ -1,0 +1,22 @@
+---
+alwaysApply: true
+---
+
+## FRONTEND
+
+### Guidelines for ASTRO
+
+#### ASTRO_CODING_STANDARDS
+
+- Use Astro components (.astro) for static content and layout
+- Implement framework components in {{framework_name}} only when interactivity is needed
+- Leverage View Transitions API for smooth page transitions (use ClientRouter)
+- Implement middleware for request/response modification
+- Use image optimization with the Astro Image integration
+- Leverage Server Endpoints for API routers
+- Implement hybrid rendering with server-side rendering where needed
+- Use Astro.cookies for server-side cookie management
+- Implement middleware for request/response modification
+- Use image optimization with the Astro Image integration
+- Use Astro.cookies for server-side cookie management
+- Leverage import.meta.env for environment variables
