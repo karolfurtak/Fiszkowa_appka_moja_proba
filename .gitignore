@@ -1,0 +1,25 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Vercel
+.vercel
+
+# Testing
+/coverage
+
+# Astro
+/dist
+/.astro
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.wrangler
+
+# Env variables
+.env
+.env*.local
+
+# Editor specific
+.vscode
