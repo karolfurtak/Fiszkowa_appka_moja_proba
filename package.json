@@ -14,10 +14,12 @@
     "db:status": "npx supabase status",
     "db:diff": "npx supabase db diff",
     "db:migration": "npx supabase migration new",
-    "db:types": "npx supabase gen types typescript --local > src/types/database.types.ts"
+    "db:types": "npx supabase gen types typescript --local > src/types/database.types.ts",
+    "functions:serve": "npx supabase functions serve generate-flashcards --no-verify-jwt",
+    "functions:deploy": "npx supabase functions deploy generate-flashcards"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.83.0"
+    "@supabase/supabase-js": "^2.86.0"
   },
   "devDependencies": {
     "supabase": "^2.58.5"

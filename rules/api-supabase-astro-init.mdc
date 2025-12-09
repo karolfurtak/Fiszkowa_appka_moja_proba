@@ -1,0 +1,101 @@
+# Supabase Astro Integration - API Reference
+
+This document provides a quick reference for the file structure and code snippets needed to integrate Supabase with your Astro project. For detailed setup instructions, see `Supabase Astro Initialization.mdc`.
+
+## Prerequisites
+
+- Astro 5, TypeScript 5, React 19, Tailwind 4
+- `@supabase/supabase-js` package installed
+- `/supabase/config.toml` exists
+- `/src/db/database.types.ts` exists with correct type definitions
+
+## File Structure
+
+### 1. Supabase Client (`/src/db/supabase.client.ts`)
+
+```ts
+import { createClient } from '@supabase/supabase-js';
+
+import type { Database } from './database.types.ts';
+
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+}
+
+export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+```
+
+### 2. Middleware (`/src/middleware/index.ts`)
+
+```ts
+import { defineMiddleware } from 'astro:middleware';
+
+import { supabaseClient } from '../db/supabase.client.ts';
+
+export const onRequest = defineMiddleware((context, next) => {
+  context.locals.supabase = supabaseClient;
+  return next();
+});
+```
+
+### 3. TypeScript Definitions (`src/env.d.ts`)
+
+```ts
+/// <reference types="astro/client" />
+
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from './db/database.types.ts';
+
+declare global {
+  namespace App {
+    interface Locals {
+      supabase: SupabaseClient<Database>;
+    }
+  }
+}
+
+interface ImportMetaEnv {
+  readonly PUBLIC_SUPABASE_URL: string;
+  readonly PUBLIC_SUPABASE_ANON_KEY: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+```
+
+## Usage in Astro Components
+
+```astro
+---
+// Access Supabase client from context
+const { supabase } = Astro.locals;
+
+// Example query
+const { data, error } = await supabase.from('decks').select('*');
+---
+
+{error ? (
+  <p>Error: {error.message}</p>
+) : (
+  <ul>
+    {data?.map((deck) => (
+      <li>{deck.name}</li>
+    ))}
+  </ul>
+)}
+```
+
+## Environment Variables
+
+Required in `.env` file:
+
+```env
+PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+**Note:** In Astro, environment variables accessible in the browser must be prefixed with `PUBLIC_`.

@@ -1,0 +1,65 @@
+---
+// Static page - connection test will run client-side
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Supabase Connection Test</title>
+  </head>
+  <body style="font-family: system-ui; padding: 2rem; max-width: 800px; margin: 0 auto;">
+    <h1>Supabase Connection Test</h1>
+    
+    <div id="connection-result" style="margin: 1rem 0;">
+      <p>Testing connection...</p>
+    </div>
+    
+    <div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+      <h2>Configuration</h2>
+      <p><strong>Supabase URL:</strong> <span id="supabase-url">{import.meta.env.PUBLIC_SUPABASE_URL || 'Not set'}</span></p>
+      <p><strong>Anon Key:</strong> <span id="anon-key">{import.meta.env.PUBLIC_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Not set'}</span></p>
+    </div>
+
+    <script>
+      import { testConnection } from '../lib/test-connection';
+      
+      async function runTest() {
+        const resultDiv = document.getElementById('connection-result');
+        if (!resultDiv) return;
+        
+        try {
+          const result = await testConnection();
+          
+          if (result.success) {
+            resultDiv.innerHTML = `
+              <div style="background: #10b981; color: white; padding: 1rem; border-radius: 0.5rem;">
+                ✅ <strong>Connection Successful!</strong>
+                <p>Your Supabase configuration is working correctly.</p>
+              </div>
+            `;
+          } else {
+            resultDiv.innerHTML = `
+              <div style="background: #ef4444; color: white; padding: 1rem; border-radius: 0.5rem;">
+                ❌ <strong>Connection Failed</strong>
+                <pre style="background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.25rem; overflow-x: auto;">
+                  ${JSON.stringify(result.error || 'Unknown error', null, 2)}
+                </pre>
+              </div>
+            `;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `
+            <div style="background: #ef4444; color: white; padding: 1rem; border-radius: 0.5rem;">
+              ❌ <strong>Connection Failed</strong>
+              <pre style="background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.25rem; overflow-x: auto;">
+                ${JSON.stringify(String(error), null, 2)}
+              </pre>
+            </div>
+          `;
+        }
+      }
+      
+      runTest();
+    </script>
+  </body>
+</html>

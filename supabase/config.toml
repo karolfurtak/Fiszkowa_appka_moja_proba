@@ -334,8 +334,11 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
-# [edge_runtime.secrets]
-# secret_key = "env(SECRET_VALUE)"
+[edge_runtime.secrets]
+# Read OPENROUTER_API_KEY from .env file for local development
+OPENROUTER_API_KEY = "env(OPENROUTER_API_KEY)"
+# Read DEFAULT_USER_ID from .env file for local development
+DEFAULT_USER_ID = "env(DEFAULT_USER_ID)"
 
 [analytics]
 enabled = true

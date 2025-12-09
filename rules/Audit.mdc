@@ -1,0 +1,135 @@
+✅ Zasada audytu: Lokalizacja problemu na schemacie przepływu danych
+Aby poprawnie zgłosić, przeanalizować lub naprawić problem w procesie generowania flashcards, każdy audyt musi zawierać jednoznaczne wskazanie miejsca wystąpienia błędu na schemacie przepływu danych.
+
+🔁 Schemat przepływu danych
+Kod
+Postman (localhost:3000/api/generations)
+    ↓ POST z source_text
+Astro API Proxy (src/pages/api/generations.ts)
+    ↓ Mapowanie: source_text → text
+    ↓ POST do Supabase Edge Function
+Supabase Edge Function (localhost:54321/functions/v1/generate-flashcards)
+    ↓ Walidacja danych
+    ↓ Konstrukcja promptu dla AI
+    ↓ POST do OpenRouter.ai
+OpenRouter.ai API (https://openrouter.ai/api/v1/chat/completions)
+    ↓ Model: amazon/nova-2-lite-v1:free
+    ↓ Generacja flashcards
+    ↓ Response z JSON
+Supabase Edge Function
+    ↓ Parsowanie odpowiedzi AI
+    ↓ Walidacja flashcards
+    ↓ INSERT do PostgreSQL
+    ↓ Response z proposals
+Astro API Proxy
+    ↓ Response
+Postman
+✅ Wymagania audytu
+Każdy audyt powinien zawierać:
+
+1. Lokalizację problemu
+Wskaż dokładny etap lub podetap, np.:
+
+Postman → błędny payload
+
+Astro API Proxy → mapowanie source_text → text
+
+Edge Function → walidacja danych wejściowych
+
+Edge Function → konstrukcja promptu
+
+Edge Function → request do OpenRouter.ai
+
+OpenRouter.ai → błędny JSON
+
+Edge Function → parsowanie odpowiedzi
+
+Edge Function → walidacja flashcards
+
+Edge Function → zapis do PostgreSQL
+
+2. Opis objawu
+Przykłady:
+
+błąd HTTP (np. 400, 422, 500)
+
+niepoprawny JSON
+
+brak danych w odpowiedzi
+
+niepoprawna walidacja
+
+timeout
+
+błędny insert do bazy
+
+3. Wpływ na dalsze etapy
+Np.:
+
+flashcards nie są generowane
+
+brak zapisu do bazy
+
+pipeline zatrzymuje się przed walidacją
+
+response do klienta jest pusty lub błędny
+
+✅ Jakie dane należy dostarczyć do analizy
+Aby audyt był możliwy do wykonania, zgłoszenie musi zawierać komplet danych diagnostycznych:
+
+A. Dane wejściowe
+Payload wysłany z Postmana (pełny JSON)
+
+Headers (szczególnie Content-Type, Authorization jeśli dotyczy)
+
+B. Logi z poszczególnych etapów
+Logi Astro API Proxy (jeśli dostępne)
+
+Logi Supabase Edge Function (pełne, nie wycinki)
+
+Logi błędów z OpenRouter.ai (jeśli zwrócone)
+
+C. Dane z odpowiedzi
+Surowy response z Astro API Proxy
+
+Surowy response z Edge Function
+
+Surowy response z OpenRouter.ai
+
+D. Fragmenty kodu (jeśli istotne)
+mapowanie danych
+
+konstrukcja promptu
+
+walidacja danych
+
+parsowanie JSON
+
+insert do bazy
+
+E. Dane z bazy (opcjonalnie)
+rekordy, które zostały zapisane lub niepoprawnie zapisane
+
+struktura tabel, jeśli problem dotyczy schematu
+
+F. Zrzuty ekranu / screenshoty
+Postman (request + response)
+
+logi z terminala
+
+dashboard Supabase (jeśli dotyczy)
+
+✅ Przykład użycia zasady
+Lokalizacja problemu: Supabase Edge Function → Parsowanie odpowiedzi AI
+
+Objaw: Model zwraca JSON w formacie string, który nie przechodzi JSON.parse().
+
+Dostarczone dane:
+
+payload z Postmana
+
+log z Edge Function: Unexpected token '}' in JSON at position 312
+
+surowy response z OpenRouter.ai
+
+Wpływ: Flashcards nie są walidowane ani zapisywane do bazy.

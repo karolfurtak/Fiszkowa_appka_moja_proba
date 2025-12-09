@@ -9,6 +9,7 @@ A modern web application designed to accelerate the creation of educational flas
 - [Project Description](#project-description)
 - [Tech Stack](#tech-stack)
 - [Getting Started Locally](#getting-started-locally)
+- [Setup Instructions](#setup-instructions)
 - [Available Scripts](#available-scripts)
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
@@ -88,6 +89,16 @@ npm run dev
 ```
 
 The application should now be running at `http://localhost:4321`.
+
+## Setup Instructions
+
+For detailed installation and configuration instructions, including:
+- How to install Supabase CLI
+- How to run Supabase from the command line
+- Database migration setup
+- Troubleshooting common issues
+
+Please refer to the [SETUP.md](SETUP.md) file.
 
 ## Available Scripts
 

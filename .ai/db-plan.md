@@ -38,9 +38,8 @@ Represents an individual flashcard within a deck.
 |---|---|---|---|
 | `id` | `bigint` | Primary Key, Generated Always as Identity | Unique identifier for the flashcard. |
 | `deck_id` | `bigint` | Not Null, Foreign Key to `public.decks(id)` `ON DELETE CASCADE` | The deck this flashcard belongs to. |
-| `question` | `text` | Not Null | The question text on the flashcard. |
+| `question` | `text` | Not Null, CHECK (length >= 1000 AND length <= 10000) | The question text on the flashcard. Must be between 1000 and 10000 characters. |
 | `correct_answer` | `text` | Not Null | The correct answer. |
-| `incorrect_answers` | `text[]` | Not Null | An array of incorrect answers (distractors). |
 | `image_url` | `text` | Nullable, CHECK (is valid URL) | Optional image URL for the flashcard. |
 | `status` | `flashcard_status` | Not Null, Default `'learning'` | The learning status of the card (`learning` or `mastered`). |
 | `due_date` | `timestamptz` | Not Null, Default `now()` | The next scheduled review date. |
@@ -48,6 +47,24 @@ Represents an individual flashcard within a deck.
 | `consecutive_correct_answers` | `integer`| Not Null, Default `0` | Counter for successive correct answers. |
 | `created_at` | `timestamptz` | Not Null, Default `now()` | Timestamp of when the flashcard was created. |
 | `updated_at` | `timestamptz` | Not Null, Default `now()` | Timestamp of the last flashcard update. |
+
+---
+
+### `public.flashcard_proposals`
+Represents AI-generated flashcard proposals awaiting user verification and acceptance.
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `bigint` | Primary Key, Generated Always as Identity | Unique identifier for the proposal. |
+| `user_id` | `uuid` | Not Null, Foreign Key to `public.profiles(id)` `ON DELETE CASCADE` | The user who owns this proposal. |
+| `question` | `text` | Not Null, CHECK (length >= 1000 AND length <= 10000) | The question text. Must be between 1000 and 10000 characters. |
+| `correct_answer` | `text` | Not Null | The correct answer. |
+| `image_url` | `text` | Nullable, CHECK (is valid URL) | Optional image URL for the flashcard. |
+| `domain` | `text` | Nullable | Detected or specified domain of knowledge. |
+| `generation_session_id` | `text` | Nullable | Identifier to group proposals from the same generation session. |
+| `status` | `proposal_status` | Not Null, Default `'pending'` | The status of the proposal (`pending`, `accepted`, `rejected`). |
+| `created_at` | `timestamptz` | Not Null, Default `now()` | Timestamp of when the proposal was created. |
+| `updated_at` | `timestamptz` | Not Null, Default `now()` | Timestamp of the last proposal update. |
 
 ## 2. Relationships
 
@@ -58,6 +75,10 @@ Represents an individual flashcard within a deck.
     -   A single deck can contain multiple flashcards.
     -   Each flashcard belongs to exactly one deck.
     -   Deleting a deck will automatically delete all flashcards within it (`ON DELETE CASCADE`).
+-   **Users to Flashcard Proposals**: One-to-Many (`profiles` 1-to-many `flashcard_proposals`)
+    -   A single user can have multiple flashcard proposals.
+    -   Each proposal belongs to exactly one user.
+    -   Deleting a user will automatically delete all their proposals (`ON DELETE CASCADE`).
 
 ## 3. Indexes
 
@@ -72,6 +93,15 @@ CREATE INDEX idx_flashcards_deck_id ON public.flashcards(deck_id);
 
 -- Index to quickly find flashcards due for review
 CREATE INDEX idx_flashcards_due_date ON public.flashcards(due_date);
+
+-- Index to quickly find all proposals for a user
+CREATE INDEX idx_flashcard_proposals_user_id ON public.flashcard_proposals(user_id);
+
+-- Index to quickly find proposals by generation session
+CREATE INDEX idx_flashcard_proposals_session_id ON public.flashcard_proposals(generation_session_id);
+
+-- Index to quickly find pending proposals
+CREATE INDEX idx_flashcard_proposals_status ON public.flashcard_proposals(status);
 ```
 
 ## 4. Row Level Security (RLS) Policies
@@ -83,6 +113,7 @@ RLS must be enabled on all tables to ensure users can only access their own data
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.decks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.flashcards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.flashcard_proposals ENABLE ROW LEVEL SECURITY;
 ```
 
 ### Policies for `profiles`
@@ -164,12 +195,42 @@ USING (
 );
 ```
 
+### Policies for `flashcard_proposals`
+```sql
+-- Users can see their own proposals.
+CREATE POLICY "Users can view their own proposals."
+ON public.flashcard_proposals FOR SELECT
+USING (auth.uid() = user_id);
+
+-- Users can create proposals for themselves.
+CREATE POLICY "Users can create their own proposals."
+ON public.flashcard_proposals FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own proposals.
+CREATE POLICY "Users can update their own proposals."
+ON public.flashcard_proposals FOR UPDATE
+USING (auth.uid() = user_id);
+
+-- Users can delete their own proposals.
+CREATE POLICY "Users can delete their own proposals."
+ON public.flashcard_proposals FOR DELETE
+USING (auth.uid() = user_id);
+```
+
 ## 5. Additional Notes & Definitions
 
-### Custom `ENUM` Type
-A custom type is required to manage the status of a flashcard.
+### Custom `ENUM` Types
+Custom types are required to manage the status of flashcards and proposals.
+
+**Flashcard Status:**
 ```sql
 CREATE TYPE public.flashcard_status AS ENUM ('learning', 'mastered');
+```
+
+**Proposal Status:**
+```sql
+CREATE TYPE public.proposal_status AS ENUM ('pending', 'accepted', 'rejected');
 ```
 
 ### `updated_at` Trigger
@@ -198,5 +259,9 @@ FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
 CREATE TRIGGER on_flashcards_update
 BEFORE UPDATE ON public.flashcards
+FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
+
+CREATE TRIGGER on_flashcard_proposals_update
+BEFORE UPDATE ON public.flashcard_proposals
 FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 ```

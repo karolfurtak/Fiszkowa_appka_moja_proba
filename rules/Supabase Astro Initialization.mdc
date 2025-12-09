@@ -1,0 +1,212 @@
+# Supabase Astro Initialization - Complete Setup Guide
+
+This document provides a complete step-by-step guide for setting up and configuring Supabase with your Astro project, including terminal commands, configuration, and troubleshooting.
+
+For a quick reference of file structures and code snippets, see `api-supabase-astro-init.mdc`.
+
+## Prerequisites
+
+- Your project should use Astro 5, TypeScript 5, React 19, and Tailwind 4.
+- Node.js installed (version specified in `.nvmrc`)
+- npm or yarn package manager
+- Supabase account and project (or Docker for local development)
+
+IMPORTANT: Check prerequisites before performing actions below. If they're not met, stop and ask a user for the fix.
+
+## Terminal Commands Setup
+
+### 1. Install Dependencies
+
+Install the Supabase JavaScript client library:
+
+```bash
+npm install @supabase/supabase-js
+```
+
+### 2. Initialize Supabase Project (if not already done)
+
+If the project hasn't been initialized with Supabase yet:
+
+```bash
+npx supabase init
+```
+
+This creates the `/supabase` directory with `config.toml` file.
+
+**Note:** Supabase CLI is not installed globally. Always use `npx supabase` instead of just `supabase`.
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root (if it doesn't exist) and add your Supabase credentials:
+
+```env
+PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+**Where to find these values:**
+- Go to [Supabase Dashboard](https://app.supabase.com)
+- Select your project
+- Navigate to **Project Settings** → **API**
+- Copy the **Project URL** and **anon/public** key
+
+**Important:** In Astro, environment variables accessible in the browser must be prefixed with `PUBLIC_`.
+
+### 4. Apply Database Migrations
+
+#### Option A: Using Supabase Dashboard (Recommended if Docker is not working)
+
+1. Log in to [Supabase Dashboard](https://app.supabase.com)
+2. Select your project
+3. Go to **SQL Editor**
+4. Copy the contents of your migration file (e.g., `supabase/migrations/20241118000000_initial_schema.sql`)
+5. Paste and execute the SQL in the SQL Editor
+
+#### Option B: Using Supabase CLI with Local Environment (Requires Docker)
+
+If Docker is running and local Supabase is started:
+
+```bash
+# Start local Supabase
+npx supabase start
+
+# Apply migrations
+npx supabase migration up
+```
+
+#### Option C: Using Supabase CLI with Remote Project
+
+If you want to push migrations to your remote Supabase project:
+
+```bash
+# Link to your remote project (requires login)
+npx supabase login
+npx supabase link --project-ref your-project-ref
+
+# Push migrations to remote database
+npx supabase db push
+```
+
+### 5. Generate TypeScript Types
+
+#### Option A: Using Project ID (Requires Login)
+
+```bash
+# Login to Supabase CLI first
+npx supabase login
+
+# Generate types from remote database
+npx supabase gen types typescript --project-id your-project-ref > src/db/database.types.ts
+```
+
+#### Option B: Using Database Connection String
+
+```bash
+npx supabase gen types typescript --db-url "postgresql://postgres:[PASSWORD]@db.your-project-ref.supabase.co:5432/postgres" > src/db/database.types.ts
+```
+
+**Where to find the connection string:**
+- Supabase Dashboard → **Project Settings** → **Database** → **Connection string** → **Connection pooling** (Session mode)
+
+#### Option C: Manual Type Creation
+
+If CLI methods don't work, you can manually create the types based on your database schema. See the `database.types.ts` file structure in the File Structure section below.
+
+### 6. Test the Connection
+
+Create a test page to verify the Supabase connection works:
+
+```bash
+# Create test page
+touch src/pages/test-connection.astro
+```
+
+Add the following content to test the connection:
+
+```astro
+---
+import { supabaseClient } from '../db/supabase.client.ts';
+
+const { data, error } = await supabaseClient.from('profiles').select('count').limit(1);
+---
+
+<html>
+  <head>
+    <title>Supabase Connection Test</title>
+  </head>
+  <body>
+    {error ? (
+      <div style="color: red;">
+        ❌ Connection Failed: {error.message}
+      </div>
+    ) : (
+      <div style="color: green;">
+        ✅ Connection Successful!
+      </div>
+    )}
+  </body>
+</html>
+```
+
+Visit `http://localhost:4321/test-connection` after starting the dev server.
+
+### 7. Start Development Server
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:4321`.
+
+## File Structure and Code
+
+After completing the terminal setup above, create the necessary files following the structure and code provided in `api-supabase-astro-init.mdc`.
+
+**Required files to create:**
+1. `/src/db/supabase.client.ts` - Supabase client initialization
+2. `/src/middleware/index.ts` - Astro middleware for Supabase
+3. `src/env.d.ts` - TypeScript environment definitions
+
+See `api-supabase-astro-init.mdc` for complete code snippets and file structures.
+
+## Troubleshooting
+
+### Error: "supabase: command not found"
+
+**Solution:** Always use `npx supabase` instead of just `supabase`. Supabase CLI is not installed globally.
+
+### Error: "failed to connect to postgres" or "Docker not running"
+
+**Solution:** 
+- If using local Supabase, ensure Docker Desktop is running
+- Alternatively, use the remote Supabase database by updating `.env` with remote project credentials
+- Use Option A (Supabase Dashboard) for applying migrations if Docker is not available
+
+### Error: "Access token not provided" when generating types
+
+**Solution:**
+- Run `npx supabase login` first to authenticate
+- Or use the `--db-url` option with a direct database connection string instead of `--project-id`
+
+### Error: "Missing Supabase environment variables"
+
+**Solution:**
+- Ensure `.env` file exists in the project root
+- Verify variable names use `PUBLIC_` prefix: `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`
+- Restart the development server after changing `.env` file
+
+### Error: "failed to parse environment file"
+
+**Solution:**
+- Check that `.env` file uses proper encoding (UTF-8)
+- Ensure there are no special characters or BOM markers in variable names
+- Verify that variable values don't contain unescaped quotes or special characters
+
+### Types not updating after database changes
+
+**Solution:**
+- Regenerate types after any database schema changes:
+  ```bash
+  npx supabase gen types typescript --project-id your-project-ref > src/db/database.types.ts
+  ```
+- Or manually update the types in `src/db/database.types.ts` to match your schema
