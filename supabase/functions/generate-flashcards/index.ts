@@ -244,15 +244,16 @@ serve(async (req) => {
 ${domainInstruction}
 
 CRITICAL REQUIREMENTS:
-1. Questions MUST be between 50 and 10000 characters long. This is a strict requirement.
+1. LANGUAGE: Generate ALL flashcards (questions and answers) in the SAME LANGUAGE as the source text. If the source text is in Polish, generate flashcards in Polish. If the source text is in English, generate flashcards in English. Match the language exactly.
+2. Questions MUST be between 50 and 10000 characters long. This is a strict requirement.
    - Questions can be concise (50-500 chars) for simple facts or detailed (up to 10000 chars) for complex scenarios
    - For complex topics, include context, background information, and specific details from the source text
    - Format as complete scenarios, case studies, or detailed problem statements when appropriate
    - Example (short): "What is the primary function of chlorophyll in photosynthesis?"
    - Example (long): "Given the following scenario about photosynthesis: [detailed scenario with context, background, specific conditions, and multiple aspects to consider]... What are the key processes involved and how do they interact?"
-2. Answers should be concise and accurate, maximum 500 characters.
-3. Each flashcard should test understanding of key concepts from the text.
-4. If domain is not provided, detect and include the domain of knowledge for each flashcard.
+3. Answers should be concise and accurate, maximum 500 characters.
+4. Each flashcard should test understanding of key concepts from the text.
+5. If domain is not provided, detect and include the domain of knowledge for each flashcard.
 
 Return the response as a JSON object with this exact structure:
 {

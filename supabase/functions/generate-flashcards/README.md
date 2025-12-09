@@ -64,9 +64,10 @@ When deployed to Supabase:
 ## AI Prompt
 
 The function uses a carefully crafted prompt to instruct the AI to:
-1. Generate flashcards with questions between 50-10000 characters
-2. Provide concise answers (max 500 characters)
-3. Detect domain of knowledge if not provided
+1. Generate flashcards in the SAME LANGUAGE as the source text (if text is in Polish, flashcards are in Polish; if in English, flashcards are in English)
+2. Generate flashcards with questions between 50-10000 characters
+3. Provide concise answers (max 500 characters)
+4. Detect domain of knowledge if not provided
 4. Return structured JSON response
 
 ## Environment Variables
