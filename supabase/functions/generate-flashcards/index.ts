@@ -218,7 +218,7 @@ serve(async (req) => {
     // 
     // Prompt Design:
     // - Instructs AI to generate flashcards with specific length requirements
-    // - Questions must be 50-500 characters (concise and focused)
+    // - Questions must be 50-10000 characters (flexible - can be concise or detailed)
     // - Answers must be max 500 characters (concise and accurate)
     // - AI should detect domain if not provided
     // - Returns structured JSON response
@@ -227,7 +227,7 @@ serve(async (req) => {
     // {
     //   "flashcards": [
     //     {
-    //       "question": "Concise question text (50-500 characters)...",
+    //       "question": "Question text (50-10000 characters - can be concise or detailed)...",
     //       "correct_answer": "Concise answer (max 500 characters)",
     //       "domain": "Domain name"
     //     }
@@ -244,11 +244,12 @@ serve(async (req) => {
 ${domainInstruction}
 
 CRITICAL REQUIREMENTS:
-1. Questions MUST be between 50 and 500 characters long. This is a strict requirement.
-   - Questions should be concise, clear, and focused on a single concept or fact
-   - Avoid overly long scenarios or multi-part problems
-   - Format as direct questions that test understanding of key concepts
-   - Example: "What is the primary function of chlorophyll in photosynthesis?"
+1. Questions MUST be between 50 and 10000 characters long. This is a strict requirement.
+   - Questions can be concise (50-500 chars) for simple facts or detailed (up to 10000 chars) for complex scenarios
+   - For complex topics, include context, background information, and specific details from the source text
+   - Format as complete scenarios, case studies, or detailed problem statements when appropriate
+   - Example (short): "What is the primary function of chlorophyll in photosynthesis?"
+   - Example (long): "Given the following scenario about photosynthesis: [detailed scenario with context, background, specific conditions, and multiple aspects to consider]... What are the key processes involved and how do they interact?"
 2. Answers should be concise and accurate, maximum 500 characters.
 3. Each flashcard should test understanding of key concepts from the text.
 4. If domain is not provided, detect and include the domain of knowledge for each flashcard.
@@ -257,7 +258,7 @@ Return the response as a JSON object with this exact structure:
 {
   "flashcards": [
     {
-      "question": "Concise question text (MUST be 50-500 characters)...",
+      "question": "Question text (MUST be 50-10000 characters - can be concise or detailed depending on complexity)...",
       "correct_answer": "Concise answer (max 500 characters)",
       "domain": "Domain name"
     }
@@ -268,7 +269,7 @@ Return the response as a JSON object with this exact structure:
 Text to analyze:
 ${text}
 
-Generate at least 3-5 flashcards. Each question MUST be 50-500 characters. Return only valid JSON, no additional text.`;
+Generate at least 3-5 flashcards. Each question MUST be 50-10000 characters. Return only valid JSON, no additional text.`;
 
     // Step 8: Call OpenRouter.ai API
     const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
@@ -480,8 +481,8 @@ Generate at least 3-5 flashcards. Each question MUST be 50-500 characters. Retur
           hasAnswer: !!correctAnswer,
         };
 
-        // Validate question length (50-500 characters)
-        if (question.length < 50 || question.length > 500) {
+        // Validate question length (50-10000 characters)
+        if (question.length < 50 || question.length > 10000) {
           console.warn('Flashcard rejected - invalid question length:', {
             ...validationDetails,
             reason: question.length < 50 ? 'too_short' : 'too_long',
@@ -523,7 +524,7 @@ Generate at least 3-5 flashcards. Each question MUST be 50-500 characters. Retur
         JSON.stringify({
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'No valid flashcards could be generated from the provided text. Please ensure the text contains enough content for generating flashcards with questions between 50-500 characters.',
+            message: 'No valid flashcards could be generated from the provided text. Please ensure the text contains enough content for generating flashcards with questions between 50-10000 characters.',
           },
         } as ErrorResponse),
         {

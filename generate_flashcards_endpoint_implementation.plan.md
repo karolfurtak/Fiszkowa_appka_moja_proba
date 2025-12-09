@@ -122,7 +122,7 @@ Z pliku `src/types.ts`:
 6. **Walidacja i przetwarzanie odpowiedzi AI:**
 
    - Parsowanie odpowiedzi JSON z listą fiszek
-   - Walidacja każdej propozycji (question: 50-500 znaków, correct_answer: max 500 znaków)
+   - Walidacja każdej propozycji (question: 50-10000 znaków, correct_answer: max 500 znaków)
    - Filtrowanie nieprawidłowych propozycji
 
 7. **Zapis do bazy danych:**
@@ -281,7 +281,7 @@ Z pliku `src/types.ts`:
 
 - Parsowanie odpowiedzi JSON
 - Walidacja każdej propozycji:
-  - `question`: 50-500 znaków
+  - `question`: 50-10000 znaków
   - `correct_answer`: max 500 znaków
   - Obecność wymaganych pól
 - Filtrowanie nieprawidłowych propozycji
@@ -344,7 +344,7 @@ serve(async (req) => {
 Prompt powinien zawierać:
 
 - Instrukcje generowania fiszek w formacie JSON
-- Wymaganie zwięzłych pytań (50-500 znaków)
+- Wymaganie pytań (50-10000 znaków - elastyczne, mogą być zwięzłe lub szczegółowe)
 - Wymaganie krótkich odpowiedzi (max 500 znaków)
 - Wykrywanie domeny wiedzy, jeśli nie podana
 - Format odpowiedzi: `{ flashcards: [{ question, correct_answer, domain }] }`

@@ -216,7 +216,7 @@ POST https://openrouter.ai/api/v1/chat/completions
 └──────┬───────────────────────┘
        │
        │ 4. Parsowanie odpowiedzi
-       │ 5. Walidacja (question: 50-500 znaków)
+       │ 5. Walidacja (question: 50-10000 znaków)
        │ 6. INSERT INTO flashcard_proposals
        │
        ▼
@@ -329,7 +329,7 @@ INSERT INTO flashcard_proposals (
   status
 ) VALUES (
   '00000000-0000-0000-0000-000000000000',
-  'Concise question text (50-500 chars)...',
+  'Question text (50-10000 chars)...',
   'Short answer (max 500 chars)',
   'Biology',
   'gen-1234567890-abc12345-xyz',
@@ -736,7 +736,7 @@ Frontend    Astro Proxy    Edge Function    OpenRouter    PostgreSQL
   generation_session_id: string;
   proposals: Array<{
     id: number;
-    question: string;           // 50-500 znaków
+    question: string;           // 50-10000 znaków
     correct_answer: string;      // max 500 znaków
     domain: string | null;
     status: "pending" | "accepted" | "rejected";
@@ -1201,7 +1201,7 @@ const { data: insertedProposals, error } = await supabase
 |------|-----|-----|------|
 | `text` (request) | 100 znaków | 10000 znaków | Tekst źródłowy do analizy |
 | `domain` (request) | - | 100 znaków | Opcjonalna domena wiedzy |
-| `question` (proposal) | 50 znaków | 500 znaków | Pytanie fiszki |
+| `question` (proposal) | 50 znaków | 10000 znaków | Pytanie fiszki |
 | `correct_answer` (proposal) | - | 500 znaków | Odpowiedź fiszki |
 
 ### Limity API

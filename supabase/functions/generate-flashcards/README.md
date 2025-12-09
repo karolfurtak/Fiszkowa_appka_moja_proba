@@ -64,7 +64,7 @@ When deployed to Supabase:
 ## AI Prompt
 
 The function uses a carefully crafted prompt to instruct the AI to:
-1. Generate flashcards with questions between 50-500 characters
+1. Generate flashcards with questions between 50-10000 characters
 2. Provide concise answers (max 500 characters)
 3. Detect domain of knowledge if not provided
 4. Return structured JSON response
@@ -98,7 +98,7 @@ If flashcards are not being generated, check the logs to see what OpenRouter is 
 ### Common Issues
 
 **Issue: "No valid flashcards could be generated"**
-- **Cause:** OpenRouter returned flashcards, but they don't meet validation requirements (question must be 50-500 characters)
+- **Cause:** OpenRouter returned flashcards, but they don't meet validation requirements (question must be 50-10000 characters)
 - **Solution:** Check logs for `questionLength` values. The AI model may not be generating long enough questions. Consider:
   - Using a different AI model
   - Adjusting the prompt to emphasize longer questions
@@ -194,7 +194,7 @@ Generated proposals are saved to the `flashcard_proposals` table with:
 ## Validation
 
 - **Text length**: Minimum 100 characters, maximum 10000 characters (prevents DoS and optimizes AI costs)
-- **Question length**: 50-500 characters (enforced after AI generation)
+- **Question length**: 50-10000 characters (enforced after AI generation)
 - **Answer length**: Maximum 500 characters (enforced after AI generation)
 - **Domain length**: Maximum 100 characters (if provided)
 

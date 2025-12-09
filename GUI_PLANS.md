@@ -10,7 +10,7 @@ W interfejsie użytkownika musi być możliwość ręcznego skonfigurowania limi
 
 1. **Konfiguracja długości pytań:**
    - Użytkownik powinien móc ustawić minimalną i maksymalną długość pytań (w znakach)
-   - Domyślne wartości: min 50 znaków, max 500 znaków
+   - Domyślne wartości: min 50 znaków, max 10000 znaków
    - Wartości powinny być walidowane zgodnie z ograniczeniami bazy danych
 
 2. **Konfiguracja długości odpowiedzi:**
@@ -37,14 +37,14 @@ W interfejsie użytkownika musi być możliwość ręcznego skonfigurowania limi
   source_text: string;
   domain?: string;
   question_min_length?: number;  // domyślnie 50
-  question_max_length?: number; // domyślnie 500
+  question_max_length?: number; // domyślnie 10000
   answer_max_length?: number;    // domyślnie 500
 }
 ```
 
 #### Ograniczenia bazy danych:
 
-- **Pytania:** min 50 znaków, max 500 znaków (CHECK constraint w tabelach `flashcards` i `flashcard_proposals`)
+- **Pytania:** min 50 znaków, max 10000 znaków (CHECK constraint w tabelach `flashcards` i `flashcard_proposals`)
 - **Odpowiedzi:** max 500 znaków (brak minimalnej długości)
 
 #### Uwagi implementacyjne:
