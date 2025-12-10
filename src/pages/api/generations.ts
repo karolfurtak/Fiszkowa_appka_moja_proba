@@ -84,12 +84,29 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
     
+    // Get user's authorization token from request headers
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authorization token is required',
+          },
+        }),
+        {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+    
     const response = await fetch(edgeFunctionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': supabaseAnonKey, // Required by Supabase Edge Functions
-        'Authorization': `Bearer ${supabaseAnonKey}`, // Also required by Supabase Edge Functions
+        'Authorization': authHeader, // User's JWT token from request
       },
       body: JSON.stringify(body),
     });

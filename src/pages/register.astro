@@ -1,0 +1,41 @@
+---
+export const prerender = false;
+
+import RegisterForm from '../components/forms/RegisterForm';
+import { Toaster } from '../components/ui/sonner';
+
+// Sprawdzenie czy użytkownik jest już zalogowany
+const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+
+// Jeśli użytkownik jest już zalogowany, przekieruj na dashboard
+if (session) {
+  return Astro.redirect('/');
+}
+
+// Meta tagi
+const title = 'Rejestracja - 10xCards';
+const description = 'Utwórz konto w aplikacji 10xCards';
+---
+
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <main class="container mx-auto px-4 py-8 max-w-md">
+      <h1 class="text-3xl font-bold mb-6 text-center">Rejestracja</h1>
+      <RegisterForm client:load />
+    </main>
+    <Toaster client:load />
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>
+

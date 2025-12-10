@@ -1,0 +1,50 @@
+---
+export const prerender = false;
+
+import LoadingScreen from '../../components/loading/LoadingScreen';
+import { Toaster } from '../../components/ui/sonner';
+import Topbar from '../../components/layout/Topbar';
+
+// Pobranie session_id z parametrów routingu
+const sessionId = Astro.params.session_id;
+
+// Walidacja session_id
+if (!sessionId || sessionId.trim().length === 0) {
+  return Astro.redirect('/generate?error=invalid_session');
+}
+
+// Sprawdzenie autoryzacji
+const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+
+// Jeśli użytkownik nie jest zalogowany, przekieruj na stronę logowania
+if (!session) {
+  return Astro.redirect(`/login?redirect=/loading/${sessionId}`);
+}
+
+// Meta tagi
+const title = 'Generowanie fiszek - 10xCards';
+const description = 'Trwa generowanie fiszek. Proszę czekać...';
+---
+
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <Topbar client:load />
+    <main class="container mx-auto px-4 py-8 max-w-2xl">
+      <LoadingScreen sessionId={sessionId} client:load />
+    </main>
+    <Toaster client:load />
+  </body>
+</html>
+
+<style is:global>
+  @import '../../styles/global.css';
+</style>
+

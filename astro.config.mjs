@@ -1,6 +1,8 @@
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
+import { resolve } from 'path';
+import { homedir } from 'os';
 
 import tailwindcss from '@tailwindcss/vite';
 
@@ -17,6 +19,17 @@ export default defineConfig({
   integrations: [tailwind(), react()],
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    server: {
+      fs: {
+        // Allow access to files outside of project root (needed for Astro dev toolbar)
+        // This allows access to node_modules in parent directories (e.g., user's home directory)
+        allow: [
+          '..',
+          // Allow access to node_modules in user's home directory (Windows)
+          resolve(homedir(), 'node_modules')
+        ]
+      }
+    }
   }
 });

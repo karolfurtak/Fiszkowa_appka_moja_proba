@@ -174,6 +174,67 @@ export interface UpdateDeckRequest {
   name: string;
 }
 
+/**
+ * ViewModel dla talii w widoku Dashboard
+ * Rozszerza DeckWithCountResponse o obliczone wartości
+ */
+export interface DeckViewModel extends DeckWithCountResponse {
+  /**
+   * Całkowita liczba fiszek w talii
+   */
+  totalFlashcards: number;
+  /**
+   * Liczba fiszek wymagających powtórki
+   */
+  dueFlashcards: number;
+  /**
+   * Flaga czy talia ma fiszki do powtórki
+   */
+  hasDueFlashcards: boolean;
+}
+
+/**
+ * Filtr statusu fiszek w widoku listy fiszek
+ */
+export type FlashcardStatusFilter = 'all' | 'learning' | 'mastered';
+
+/**
+ * Statystyki talii
+ */
+export interface DeckStats {
+  /**
+   * Całkowita liczba fiszek
+   */
+  totalCount: number;
+  /**
+   * Liczba fiszek w trakcie nauki
+   */
+  learningCount: number;
+  /**
+   * Liczba opanowanych fiszek
+   */
+  masteredCount: number;
+  /**
+   * Liczba fiszek do powtórki (due_date <= now() && status === 'learning')
+   */
+  dueCount: number;
+}
+
+/**
+ * ViewModel dla karty fiszki w widoku listy
+ * Rozszerza FlashcardResponse o właściwości widoku
+ */
+export interface FlashcardCardViewModel extends FlashcardResponse {
+  /**
+   * Czy pytanie jest rozwinięte
+   */
+  isExpanded: boolean;
+  /**
+   * Skrócona wersja pytania (np. pierwsze 100 znaków)
+   */
+  questionPreview: string;
+}
+
 // ============================================================================
 // Flashcard DTOs
 // ============================================================================

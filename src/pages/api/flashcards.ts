@@ -30,6 +30,7 @@ interface SupabaseFlashcardInsert {
   deck_id: number;
   question: string;
   correct_answer: string;
+  incorrect_answers?: string[]; // Required by current DB schema (can be empty array)
   image_url?: string | null;
 }
 
@@ -213,6 +214,7 @@ export const POST: APIRoute = async ({ request }) => {
         deck_id: body.deck_id,
         question: question,
         correct_answer: answer,
+        incorrect_answers: [], // Empty array for manual flashcards (no distractors)
         image_url: null, // Course format doesn't include image_url, set to null
       });
     }

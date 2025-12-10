@@ -1,0 +1,46 @@
+---
+export const prerender = false;
+
+import LoginForm from '../components/forms/LoginForm';
+import { Toaster } from '../components/ui/sonner';
+
+// Sprawdzenie czy użytkownik jest już zalogowany
+// Używamy getUser() zamiast getSession() - może działać lepiej w SSR
+const { data: { user } } = await Astro.locals.supabase.auth.getUser();
+
+// Jeśli użytkownik jest już zalogowany, przekieruj na dashboard lub redirect URL
+if (user) {
+  const redirectUrl = Astro.url.searchParams.get('redirect') || '/';
+  return Astro.redirect(redirectUrl);
+}
+
+// Wyciągnij query parameter redirect
+const redirectUrl = Astro.url.searchParams.get('redirect') || undefined;
+
+// Meta tagi
+const title = 'Logowanie - 10xCards';
+const description = 'Zaloguj się do swojego konta 10xCards';
+---
+
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <main class="container mx-auto px-4 py-8 max-w-md">
+      <h1 class="text-3xl font-bold mb-6 text-center">Logowanie</h1>
+      <LoginForm redirectUrl={redirectUrl} client:load />
+    </main>
+    <Toaster client:load />
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>
+

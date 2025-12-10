@@ -65,9 +65,188 @@
 - **Autoryzacja**: JWT (JSON Web Tokens) - implementacja w późniejszym etapie rozwoju
 - **Dostępność**: Wymogi dostępności na poziomie WCAG AA
 
+## Status implementacji widoków
+
+### ✅ Zaimplementowane widoki (10/10) - **WSZYSTKIE WIDOKI GOTOWE**
+
+1. **Generator fiszek** (`/generate`) - ✅ Gotowy
+   - Formularz generowania z walidacją
+   - Integracja z API Edge Function
+   - Obsługa błędów i loading states
+   - Komponenty: `GeneratorForm.tsx`, `CharacterCounter.tsx`
+
+2. **Logowanie** (`/login`) - ✅ Gotowy
+   - Formularz logowania z walidacją
+   - Integracja z Supabase Auth
+   - Obsługa błędów i przekierowań
+   - Komponenty: `LoginForm.tsx`
+
+3. **Rejestracja** (`/register`) - ✅ Gotowy
+   - Formularz rejestracji z walidacją
+   - Wskaźnik siły hasła
+   - Integracja z Supabase Auth
+   - Komponenty: `RegisterForm.tsx`, `PasswordStrengthIndicator.tsx`
+
+4. **Weryfikacja propozycji** (`/verify/[session_id]`) - ✅ Gotowy
+   - Lista propozycji z sesji generowania
+   - Edycja, akceptacja, odrzucenie propozycji
+   - Selektor talii i zapisywanie do talii
+   - Modal edycji z pełną walidacją
+   - Komponenty: `VerificationView.tsx`, `FlashcardProposalCard.tsx`, `EditProposalModal.tsx`, `DeckSelector.tsx`
+
+5. **Ekran ładowania** (`/loading/[session_id]`) - ✅ Gotowy
+   - Progress bar z animacją
+   - Polling statusu generowania
+   - Obsługa błędów i timeoutów
+   - Komponenty: `LoadingScreen.tsx`
+   - Hook: `useGenerationPolling.ts`
+
+6. **Dashboard** (`/`) - ✅ Gotowy
+   - Lista talii z wyszukiwarką
+   - Tworzenie, edycja, usuwanie talii
+   - Statystyki fiszek (total, due)
+   - Nawigacja do trybów nauki
+   - Komponenty: `DashboardView.tsx`, `DeckCard.tsx`, `SearchBar.tsx`, `EmptyState.tsx`, `CreateDeckDialog.tsx`, `EditDeckDialog.tsx`, `DeleteDeckDialog.tsx`
+
+7. **Lista fiszek** (`/deck/[id]`) - ✅ Gotowy
+   - Wyświetlanie wszystkich fiszek w talii
+   - Filtrowanie po statusie (all/learning/mastered)
+   - Edycja i usuwanie fiszek
+   - Dodawanie nowych fiszek
+   - Zarządzanie talią (edycja nazwy, usuwanie)
+   - Komponenty: `DeckView.tsx`, `DeckHeader.tsx`, `FlashcardList.tsx`, `FlashcardCard.tsx`, `FlashcardFilters.tsx`, `FlashcardModal.tsx`, `AddFlashcardModal.tsx`, `FlashcardEmptyState.tsx`, `DeckBreadcrumb.tsx`
+
+8. **Tryb nauki** (`/deck/[id]/study`) - ✅ Gotowy
+   - Przeglądanie fiszek w formie odwracalnych kart
+   - Animacja flip karty
+   - Nawigacja między fiszkami (przyciski, klawiatura, gesty swipe)
+   - Filtrowanie po statusie
+   - Sidebar z listą fiszek
+   - Komponenty: `StudyMode.tsx`, `StudyHeader.tsx`, `FlashcardFlip.tsx`, `FlashcardFront.tsx`, `FlashcardBack.tsx`, `NavigationControls.tsx`, `StudySidebar.tsx`, `FlashcardListItem.tsx`, `StudyBreadcrumb.tsx`
+
+9. **Tryb treningu** (`/deck/[id]/review`) - ✅ Gotowy
+   - Test wielokrotnego wyboru dla fiszek do powtórki
+   - Generowanie dystraktorów
+   - Aktualizacja postępu nauki (spaced repetition)
+   - Ekran podsumowania sesji
+   - Komponenty: `TrainingSession.tsx`, `AnswerButton.tsx`, `SummaryScreen.tsx`, `IncorrectAnswerItem.tsx`
+
+10. **Ustawienia** (`/settings`) - ✅ Gotowy
+    - Zmiana hasła z walidacją
+    - Preferencje użytkownika
+    - Ustawienia aplikacji (dark mode, tryb weryfikacji)
+    - Usuwanie konta z potwierdzeniem
+    - Komponenty: `SettingsView.tsx`, `PasswordChangeForm.tsx`, `UserPreferencesForm.tsx`, `AppSettingsForm.tsx`, `DeleteAccountDialog.tsx`
+
+---
+
+## Zależności między widokami
+
+```
+Generator fiszek (/generate)
+    ↓
+Ekran ładowania (/loading/[session_id])
+    ↓
+Weryfikacja propozycji (/verify/[session_id])
+    ↓
+Dashboard (/) ← Lista fiszek (/deck/[id])
+    ↓                    ↓
+    └─────────┬─────────┘
+              ↓
+    ┌─────────┴─────────┐
+    ↓                   ↓
+Tryb nauki         Tryb treningu
+(/deck/[id]/study)  (/deck/[id]/review)
+```
+
+---
+
+## Harmonogram implementacji
+
+### Tydzień 1-2: Faza 1 - Podstawowe widoki
+1. ✅ Generator fiszek - **GOTOWY**
+2. ✅ Logowanie - **GOTOWY**
+3. ✅ Rejestracja - **GOTOWY**
+4. ✅ Weryfikacja propozycji - **GOTOWY**
+5. ⏳ **Ekran ładowania** - **NASTĘPNY** (2-3 kroki)
+6. ⏳ **Dashboard** - **WYSOKI PRIORYTET** (4-5 kroków)
+
+### Tydzień 3-4: Faza 2 - Widoki zarządzania
+7. ⏳ **Lista fiszek** - **ŚREDNI PRIORYTET** (5-6 kroków)
+
+### Tydzień 5-6: Faza 3 - Widoki nauki
+8. ⏳ **Tryb nauki** - **ŚREDNI PRIORYTET** (4-5 kroków)
+9. ⏳ **Tryb treningu** - **ŚREDNI PRIORYTET** (5-6 kroków)
+
+### Tydzień 7: Faza 4 - Widoki pomocnicze
+10. ⏳ **Ustawienia** - **NISKI PRIORYTET** (3-4 kroki)
+
+---
+
+## Szacowany czas implementacji
+
+- **Ekran ładowania:** 2-3 kroki (6-9 kroków łącznie)
+- **Dashboard:** 4-5 kroków (12-15 kroków łącznie)
+- **Lista fiszek:** 5-6 kroków (15-18 kroków łącznie)
+- **Tryb nauki:** 4-5 kroków (12-15 kroków łącznie)
+- **Tryb treningu:** 5-6 kroków (15-18 kroków łącznie)
+- **Ustawienia:** 3-4 kroki (9-12 kroków łącznie)
+
+**Łącznie:** ~23-27 kroków (69-81 kroków łącznie)
+
+Przy tempie 3 kroki na sesję: **~8-9 sesji implementacji**
+
+---
+
+## Funkcje API do zaimplementowania
+
+### Dla Dashboard
+- `fetchDecks()` - ✅ już zaimplementowana w `proposals.ts`
+- `deleteDeck(deckId)` - do utworzenia
+- `updateDeck(deckId, updates)` - do utworzenia
+
+### Dla Lista fiszek
+- `fetchFlashcards(deckId, filters)` - do utworzenia
+- `createFlashcard(deckId, flashcard)` - do utworzenia
+- `updateFlashcard(flashcardId, updates)` - do utworzenia
+- `deleteFlashcard(flashcardId)` - do utworzenia
+
+### Dla Tryb treningu
+- `fetchFlashcardsForReview(deckId)` - do utworzenia
+- `submitQuizAnswer(flashcardId, isCorrect)` - do utworzenia
+- `processQuizSession(answers)` - do utworzenia
+
+### Dla Ustawienia
+- `updatePassword(oldPassword, newPassword)` - do utworzenia
+- `updateUserPreferences(preferences)` - do utworzenia
+- `deleteAccount()` - do utworzenia
+
+---
+
+## Współdzielone komponenty do utworzenia
+
+### Komponenty nawigacji
+- `Topbar.tsx` - nawigacja górna (używana w Dashboard i innych widokach)
+- `Breadcrumb.tsx` - breadcrumb nawigacja (używana w widokach talii)
+
+### Komponenty UI
+- `Progress.tsx` - pasek postępu (Shadcn/ui) - może być już dostępny
+- `Skeleton.tsx` - skeleton loader (Shadcn/ui) - może być już dostępny
+- `DropdownMenu.tsx` - menu dropdown (Shadcn/ui) - może być już dostępny
+
+### Komponenty pomocnicze
+- `EmptyState.tsx` - pusty stan (używany w wielu widokach)
+- `ErrorBoundary.tsx` - obsługa błędów React (opcjonalnie)
+
+---
+
 ### Kluczowe widoki i ekrany
 
 **Uwaga**: Na początku skupiamy się na core'owych ekranach wymienionych poniżej. Funkcjonalności dodatkowe (np. panel administracyjny z logami generacji i błędów) będą dodane na późniejszym etapie.
+
+**Priorytety i zależności:**
+
+#### 1. Ekran autoryzacji (`/login`, `/register`) - ✅ Gotowy
 
 #### 1. Ekran autoryzacji (`/login`, `/register`)
 - **Layout**: Formularze logowania i rejestracji
@@ -75,14 +254,22 @@
 - **Integracja**: Supabase Auth API
 - **Przekierowania**: Po zalogowaniu → dashboard, po rejestracji → onboarding → dashboard
 
-#### 2. Dashboard (`/`)
+#### 2. Dashboard (`/`) - 🔴 Wysoki priorytet
+- **Priorytet:** Wysoki - główny punkt wejścia użytkownika
+- **Zależności:** ✅ Logowanie (już zaimplementowane), ⏳ Lista fiszek (wymagana dla nawigacji)
+- **Szacowany czas:** 4-5 kroków (12-15 kroków łącznie)
+- **Komponenty do utworzenia:**
+  - `DashboardView.tsx` - główny komponent
+  - `DeckCard.tsx` - karta talii
+  - `Topbar.tsx` - nawigacja górna (może być współdzielony)
+  - `SearchBar.tsx` - wyszukiwarka talii
 - **Layout**: Siatka kart talii (grid layout)
 - **Elementy**: Nazwa talii, liczba fiszek do powtórki (wyróżniona), całkowita liczba fiszek, przyciski akcji
 - **Akcje**: "Rozpocznij powtórkę", "Tryb nauki", menu kontekstowe (edytuj, usuń)
 - **Empty State**: Ekran powitalny z CTA do utworzenia pierwszej talii lub wygenerowania fiszek
 - **Górny pasek**: Przyciski "Nowa talia", "Generuj fiszki", wyszukiwarka talii
 
-#### 3. Generator fiszek (`/generate`)
+#### 3. Generator fiszek (`/generate`) - ✅ Gotowy
 - **Layout**: Formularz z sekcjami accordion
 - **Sekcja podstawowa**: Duże textarea dla tekstu źródłowego (min 100 znaków)
 - **Sekcja zaawansowana** (collapsible, domyślnie zwinięta):
@@ -109,12 +296,21 @@
   }
   ```
 
-#### 4. Ekran ładowania (podczas generowania)
+#### 4. Ekran ładowania (`/loading/[session_id]`) - 🔴 Wysoki priorytet - **NASTĘPNY**
+- **Priorytet:** Wysoki - wymagany do kompletnego przepływu generowania
+- **Zależności:** ✅ Generator fiszek (już zaimplementowany), ✅ Weryfikacja propozycji (już zaimplementowana)
+- **Szacowany czas:** 2-3 kroki (6-9 kroków łącznie)
+- **Funkcjonalności:**
+  - Wyświetlanie postępu generowania
+  - Polling statusu generowania z API
+  - Animacja ładowania
+  - Przycisk anulowania
+  - Automatyczne przekierowanie na `/verify/[session_id]` po zakończeniu
 - **Elementy**: Progress bar z szacowanym czasem, spinner, komunikat o statusie
 - **Mechanizm**: Polling co 2-3 sekundy do sprawdzania statusu generowania
 - **Nawigacja**: Możliwość anulowania i powrotu do generatora
 
-#### 5. Weryfikacja propozycji (`/verify/[session_id]`)
+#### 5. Weryfikacja propozycji (`/verify/[session_id]`) - ✅ Gotowy
 - **Layout**: Lista propozycji fiszek (z możliwością wyboru paginacji lub infinite scroll przez użytkownika)
 - **Elementy karty**: Pytanie, odpowiedź, domena, checkbox "Akceptuj" (domyślnie zaznaczony), przyciski "Odrzuć", "Regeneruj dystraktory", "Edytuj"
 - **Górny pasek**: Przyciski "Akceptuj wszystkie", "Odrzuć wszystkie", licznik zaakceptowanych/odrzuconych
@@ -122,31 +318,90 @@
 - **Przepływ**: Użytkownik przegląda propozycje, może akceptować/edytować/odrzucać pojedynczo, następnie zapisuje wybrane opcjami bulk
 - **Integracja API**: Endpointy `accept-proposal`, `accept-proposals`, `accept-proposals-by-session`, `reject-proposal`
 
-#### 6. Lista fiszek (`/deck/[id]`)
+#### 6. Lista fiszek (`/deck/[id]`) - 🟡 Średni priorytet
+- **Priorytet:** Średni - kluczowy widok zarządzania fiszkami
+- **Zależności:** ✅ Dashboard (wymagany dla nawigacji), ⏳ Tryb nauki (opcjonalnie, dla przycisku "Tryb nauki"), ⏳ Tryb treningu (opcjonalnie, dla przycisku "Rozpocznij powtórkę")
+- **Szacowany czas:** 5-6 kroków (15-18 kroków łącznie)
+- **Komponenty do utworzenia:**
+  - `DeckView.tsx` - główny komponent
+  - `FlashcardCard.tsx` - karta fiszki
+  - `FlashcardModal.tsx` - modal edycji/dodawania fiszki
+  - `DeckHeader.tsx` - nagłówek z akcjami
+  - `FlashcardFilters.tsx` - filtry statusu
 - **Layout**: Lista fiszek w talii z możliwością filtrowania
 - **Elementy**: Informacje o talii, lista fiszek, przyciski akcji
 - **Akcje**: "Rozpocznij powtórkę", "Tryb nauki", edycja/usuwanie talii
+- **Funkcjonalności:**
+  - Lista wszystkich fiszek w talii
+  - Filtrowanie po statusie (wszystkie/learning/mastered)
+  - Karty fiszek z pytaniem, odpowiedzią, statusem
+  - Edycja i usuwanie fiszek
+  - Edycja nazwy talii
+  - Usuwanie talii
+  - Breadcrumb nawigacja
+  - Paginacja lub infinite scroll
 - **Edycja**: Modal edycji fiszki (pytanie, odpowiedź, obrazek)
   - **Walidacja**: Walidacja zawartości fiszki na poziomie frontendu
   - **Zapis**: Zapis po potwierdzeniu zmian przyciskiem - **bez zapisu "real time"** (bez automatycznego zapisywania podczas edycji)
 - **Usuwanie**: Przycisk usuwania przy każdej fiszce z potwierdzeniem
 
-#### 7. Tryb treningu / Sesja powtórkowa (`/deck/[id]/review`)
+#### 7. Tryb treningu / Sesja powtórkowa (`/deck/[id]/review`) - 🟡 Średni priorytet
+- **Priorytet:** Średni - sesja powtórkowa z testem
+- **Zależności:** ✅ Lista fiszek (wymagana dla nawigacji), ⏳ API dla spaced repetition (wymagane)
+- **Szacowany czas:** 5-6 kroków (15-18 kroków łącznie)
+- **Komponenty do utworzenia:**
+  - `TrainingSession.tsx` - główny komponent
+  - `QuestionCard.tsx` - karta z pytaniem
+  - `AnswerButtons.tsx` - przyciski odpowiedzi
+  - `FeedbackSection.tsx` - sekcja informacji zwrotnej
+  - `SummaryScreen.tsx` - ekran podsumowania
 - **Layout**: Pełnoekranowy widok z jedną fiszką na raz
 - **Elementy góra**: Pasek postępu (X/Y fiszek)
 - **Elementy środek**: Pytanie (duży, czytelny tekst)
 - **Elementy dół**: 4 przyciski odpowiedzi (losowo ułożone, równy rozmiar)
+- **Funkcjonalności:**
+  - Wyświetlanie fiszek w formacie testu wielokrotnego wyboru
+  - 4 opcje odpowiedzi (1 poprawna + 3 dystraktory)
+  - Losowe ułożenie odpowiedzi
+  - Natychmiastowa informacja zwrotna po wyborze
+  - Automatyczne przejście do następnej fiszki
+  - Integracja z algorytmem spaced repetition
+  - Aktualizacja statusu fiszek (learning/mastered)
 - **Interakcja**: Natychmiastowa informacja zwrotna (zielony/czerwony, ikona ✓/✗), opóźnienie 1-2s, automatyczne przejście
 - **Zakończenie**: Ekran podsumowania z wynikiem, lista błędnych odpowiedzi, przycisk "Zakończ"
 - **Integracja API**: Endpoint `update-flashcard-progress` lub `process-quiz-session`
 
-#### 8. Tryb nauki (`/deck/[id]/study`)
+#### 8. Tryb nauki (`/deck/[id]/study`) - 🟡 Średni priorytet
+- **Priorytet:** Średni - swobodne przeglądanie fiszek
+- **Zależności:** ✅ Lista fiszek (wymagana dla nawigacji)
+- **Szacowany czas:** 4-5 kroków (12-15 kroków łącznie)
+- **Komponenty do utworzenia:**
+  - `StudyMode.tsx` - główny komponent
+  - `FlashcardFlip.tsx` - karta z animacją flip
+  - `StudySidebar.tsx` - sidebar z listą fiszek
+  - `StudyControls.tsx` - kontrolki nawigacji
 - **Layout**: Karta fiszki z możliwością odwrócenia
 - **Interakcja**: Kliknięcie lub przycisk "Pokaż odpowiedź" odsłania odpowiedź (animacja flip)
 - **Nawigacja**: Przyciski "Poprzednia"/"Następna", gesty swipe (mobile), sidebar z listą wszystkich fiszek
+- **Funkcjonalności:**
+  - Wyświetlanie fiszek w formie odwracalnych kart
+  - Animacja flip karty (CSS 3D transform)
+  - Nawigacja między fiszkami (przyciski, klawiatura, gesty swipe)
+  - Sidebar z listą wszystkich fiszek (opcjonalnie ukrywalny)
+  - Filtrowanie po statusie
+  - Pełnoekranowy tryb (opcjonalnie)
 - **Elementy**: Wskaźnik pozycji (np. "5/20"), filtrowanie po statusie (wszystkie/learning/mastered)
 
-#### 9. Panel użytkownika / Ustawienia (`/settings`)
+#### 9. Panel użytkownika / Ustawienia (`/settings`) - 🟢 Niski priorytet
+- **Priorytet:** Niski - można zaimplementować na końcu
+- **Zależności:** ✅ Logowanie (wymagane dla autoryzacji)
+- **Szacowany czas:** 3-4 kroki (9-12 kroków łącznie)
+- **Komponenty do utworzenia:**
+  - `SettingsView.tsx` - główny komponent
+  - `PasswordChangeForm.tsx` - formularz zmiany hasła
+  - `UserPreferencesForm.tsx` - formularz preferencji
+  - `AppSettingsForm.tsx` - formularz ustawień aplikacji
+  - `AccountManagement.tsx` - sekcja zarządzania kontem
 - **Layout**: Formularz ustawień konta
 - **Elementy**: 
   - Zmiana hasła (wymaga starego hasła, nowego hasła i potwierdzenia)
@@ -154,6 +409,12 @@
   - Preferencje użytkownika: pole tekstowe (max 1500 znaków) do wpisania wymagań w języku naturalnym
   - Przełącznik dark mode (jeśli dostępny w topbarze, tutaj jako backup)
   - Przełącznik paginacja/infinite scroll dla widoku weryfikacji
+- **Funkcjonalności:**
+  - Zmiana hasła (stare hasło, nowe hasło, potwierdzenie)
+  - Preferencje użytkownika (textarea dla AI)
+  - Ustawienia aplikacji (dark mode toggle, paginacja/infinite scroll)
+  - Zarządzanie kontem (usunięcie konta z potwierdzeniem)
+  - Sekcje tematyczne z Accordion
 - **Przechowywanie preferencji**: W tabeli `profiles` lub osobnej tabeli `user_preferences` w bazie danych
 - **Użycie preferencji**: Przekazywane do AI podczas generowania fiszek jako dodatkowy kontekst w prompcie
 
@@ -417,53 +678,56 @@ src/
 
 ### Roadmapa implementacji UI
 
-#### Faza 1: Podstawowa infrastruktura
-1. Konfiguracja Astro + React + Tailwind + Shadcn/ui
-2. Struktura folderów i podstawowe komponenty layoutu
-3. Topbar z Navigation Menu (Shadcn/ui)
-4. Middleware autoryzacji w Astro
-5. Podstawowe strony: `/login`, `/register`, `/` (dashboard placeholder)
+#### Faza 1: Podstawowa infrastruktura - ✅ Zakończona
+1. ✅ Konfiguracja Astro + React + Tailwind + Shadcn/ui
+2. ✅ Struktura folderów i podstawowe komponenty layoutu
+3. ✅ Topbar z Navigation Menu (Shadcn/ui)
+4. ✅ Middleware autoryzacji w Astro
+5. ✅ Podstawowe strony: `/login`, `/register`, `/` (dashboard placeholder)
 
-#### Faza 2: Autoryzacja i dashboard
-1. Ekrany logowania i rejestracji
-2. Integracja z Supabase Auth
-3. Dashboard z listą talii (grid layout)
-4. Empty state dla dashboardu
-5. Wyszukiwarka talii
+#### Faza 2: Autoryzacja i generator - ✅ Zakończona
+1. ✅ Ekrany logowania i rejestracji
+2. ✅ Integracja z Supabase Auth
+3. ✅ Generator fiszek (`/generate`) z formularzem accordion
+4. ✅ Integracja z `/api/generations` (polling dla statusu)
+5. ✅ Widok weryfikacji (`/verify/[session_id]`) z listą propozycji
+6. ✅ Funkcjonalności akceptacji/odrzucenia (pojedynczo i bulk)
+7. ✅ Wybór talii i zapisywanie
 
-#### Faza 3: Generator i weryfikacja
-1. Generator fiszek (`/generate`) z formularzem accordion
-2. Integracja z `/api/generations` (polling dla statusu)
-3. Ekran ładowania z progress bar
-4. Widok weryfikacji (`/verify/[session_id]`) z listą propozycji
-5. Funkcjonalności akceptacji/odrzucenia (pojedynczo i bulk)
-6. Wybór talii i zapisywanie
+#### Faza 3: Ekran ładowania i dashboard - ✅ Zakończona
+1. ✅ Ekran ładowania z progress bar
+2. ✅ Dashboard z listą talii (grid layout)
+3. ✅ Empty state dla dashboardu
+4. ✅ Wyszukiwarka talii
 
-#### Faza 4: Zarządzanie fiszkami
-1. Lista fiszek w talii (`/deck/[id]`)
-2. Modal edycji fiszki z walidacją
-3. Usuwanie fiszek z potwierdzeniem
-4. Manualne tworzenie fiszek
+#### Faza 4: Zarządzanie fiszkami - ✅ Zakończona
+1. ✅ Lista fiszek w talii (`/deck/[id]`)
+2. ✅ Modal edycji fiszki z walidacją
+3. ✅ Usuwanie fiszek z potwierdzeniem
+4. ✅ Manualne tworzenie fiszek
 
-#### Faza 5: Tryby nauki
-1. Tryb treningu (`/deck/[id]/review`) - spaced repetition
-2. Integracja z endpointem `update-flashcard-progress`
-3. Ekran podsumowania sesji
-4. Tryb nauki (`/deck/[id]/study`) - odwracalne karty
+#### Faza 5: Tryby nauki - ✅ Zakończona
+1. ✅ Tryb treningu (`/deck/[id]/review`) - spaced repetition
+2. ✅ Integracja z endpointem `update-flashcard-progress`
+3. ✅ Ekran podsumowania sesji
+4. ✅ Tryb nauki (`/deck/[id]/study`) - odwracalne karty
+5. ✅ Nawigacja między fiszkami (klawiatura, gesty swipe)
+6. ✅ Animacja flip karty
 
-#### Faza 6: Ustawienia i preferencje
-1. Panel użytkownika (`/settings`)
-2. Zmiana hasła
-3. Preferencje użytkownika (pole tekstowe, max 1500 znaków)
-4. Przełącznik dark mode
-5. Przełącznik paginacja/infinite scroll
+#### Faza 6: Ustawienia i preferencje - ✅ Zakończona
+1. ✅ Panel użytkownika (`/settings`)
+2. ✅ Zmiana hasła
+3. ✅ Preferencje użytkownika (pole tekstowe, max 1500 znaków)
+4. ✅ Przełącznik dark mode
+5. ✅ Przełącznik paginacja/infinite scroll
+6. ✅ Usuwanie konta z potwierdzeniem
 
-#### Faza 7: Onboarding i finalizacja
-1. System onboardingu z tooltips
-2. Dialog wyboru "Nie pokazuj więcej"
-3. Testy dostępności (WCAG AA)
-4. Optymalizacja wydajności
-5. Finalne testy end-to-end
+#### Faza 7: Onboarding i finalizacja - ⏳ Do zrobienia
+1. ⏳ System onboardingu z tooltips
+2. ⏳ Dialog wyboru "Nie pokazuj więcej"
+3. ⏳ Testy dostępności (WCAG AA)
+4. ⏳ Optymalizacja wydajności
+5. ⏳ Finalne testy end-to-end
 
 ### Rozwiązane kwestie i doprecyzowania
 
@@ -511,6 +775,44 @@ src/
    - **Implementacja w MVP**: **Tak**, dark mode będzie dostępny w MVP.
    - **Mechanizm**: Użycie Tailwind CSS `dark:` variant dla stylów w trybie ciemnym.
    - **Przełącznik**: Przycisk/przełącznik w ustawieniach lub w nawigacji (topbar) do zmiany trybu jasny/ciemny.
+
+---
+
+## Uwagi do implementacji
+
+### Wspólne wzorce
+1. **Autoryzacja:** Wszystkie widoki wymagają sprawdzenia sesji przed renderowaniem
+2. **Loading states:** Wszystkie widoki powinny mieć loading states podczas pobierania danych
+3. **Error handling:** Wszystkie widoki powinny obsługiwać błędy sieci, timeout, offline
+4. **Dostępność:** Wszystkie widoki powinny być zgodne z WCAG AA
+5. **Responsywność:** Wszystkie widoki powinny być responsywne (mobile-first)
+
+### Optymalizacje
+1. **React.memo:** Używać dla komponentów list (karty talii, karty fiszek)
+2. **useMemo/useCallback:** Memoizować obliczone wartości i handlery
+3. **Lazy loading:** Obrazki powinny mieć `loading="lazy"`
+4. **Code splitting:** Rozważyć lazy loading dla dużych komponentów
+
+### Testowanie
+1. Każdy widok powinien mieć plan testów (TEST_[VIEW_NAME].md)
+2. Testy strukturalne (code review)
+3. Testy funkcjonalne (manualne)
+4. Testy dostępności (screen reader, keyboard navigation)
+
+---
+
+## Status implementacji - **WSZYSTKIE WIDOKI ZAIMPLEMENTOWANE** ✅
+
+Wszystkie 10 głównych widoków aplikacji zostały zaimplementowane i są gotowe do użycia.
+
+### Następne kroki (opcjonalne ulepszenia)
+
+1. ⏳ Testy jednostkowe i integracyjne dla komponentów
+2. ⏳ Optymalizacja wydajności (lazy loading, code splitting)
+3. ⏳ Dodatkowe funkcjonalności (eksport/import talii, statystyki szczegółowe)
+4. ⏳ Ulepszenia UX na podstawie feedbacku użytkowników
+5. ⏳ Dokumentacja API i komponentów
+6. ⏳ Testy E2E (end-to-end)
 
 </unresolved_issues>
 

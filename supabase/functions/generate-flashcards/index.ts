@@ -90,6 +90,92 @@ serve(async (req) => {
       );
     }
 
+    // Step 2.1: Extract and validate user authorization token
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authorization token is required',
+          },
+        } as ErrorResponse),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+
+    // Get anon key for user token verification
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+    if (!supabaseAnonKey) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: 'Missing Supabase anon key configuration',
+          },
+        } as ErrorResponse),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Decode JWT token to extract user ID
+    // In Edge Functions, we can decode the JWT directly without calling getUser()
+    let userId: string;
+    try {
+      // JWT format: header.payload.signature
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) {
+        throw new Error(`Invalid token format: expected 3 parts, got ${tokenParts.length}`);
+      }
+      
+      // Decode payload (base64url)
+      // Add padding if needed for base64 decoding
+      let base64Payload = tokenParts[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (base64Payload.length % 4) {
+        base64Payload += '=';
+      }
+      
+      const payloadBytes = Uint8Array.from(atob(base64Payload), c => c.charCodeAt(0));
+      const payloadText = new TextDecoder().decode(payloadBytes);
+      const payload = JSON.parse(payloadText);
+      
+      // Extract user ID from payload (Supabase JWT uses 'sub' field)
+      userId = payload.sub || payload.user_id || payload.id;
+      
+      if (!userId) {
+        console.error('Token payload:', JSON.stringify(payload, null, 2));
+        throw new Error('User ID not found in token payload');
+      }
+      
+      console.log('Extracted user ID from token:', userId);
+    } catch (decodeError) {
+      console.error('Error decoding token:', decodeError);
+      console.error('Token preview:', token.substring(0, 50) + '...');
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Invalid or expired authorization token',
+            details: {
+              error: decodeError instanceof Error ? decodeError.message : 'Unknown error',
+            },
+          },
+        } as ErrorResponse),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     // Create client with service role key for database operations (bypasses RLS)
     // Using SupabaseClient type for type safety
     const supabase: SupabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -98,9 +184,6 @@ serve(async (req) => {
         persistSession: false,
       },
     });
-
-    // Use default user ID (auth will be implemented comprehensively later)
-    const userId = DEFAULT_USER_ID;
 
     // Step 3: Parse and validate request body
     let requestBody: GenerateFlashcardsRequest;

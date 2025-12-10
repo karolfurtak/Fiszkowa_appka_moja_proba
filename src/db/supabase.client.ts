@@ -1,4 +1,5 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from './database.types.ts';
 
@@ -9,7 +10,47 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
-export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Create browser client that syncs with SSR cookies
+// This ensures session is shared between client and server
+export const supabaseClient = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey, {
+  cookies: {
+    getAll() {
+      // Get all cookies from document.cookie
+      const cookies: { name: string; value: string }[] = [];
+      if (typeof document !== 'undefined') {
+        document.cookie.split(';').forEach((cookie) => {
+          const [name, ...valueParts] = cookie.trim().split('=');
+          if (name && valueParts.length > 0) {
+            cookies.push({
+              name: name.trim(),
+              value: decodeURIComponent(valueParts.join('=')),
+            });
+          }
+        });
+      }
+      return cookies;
+    },
+    setAll(cookies) {
+      // Set all cookies in document.cookie
+      if (typeof document !== 'undefined') {
+        cookies.forEach(({ name, value, options }) => {
+          let cookieString = `${name}=${encodeURIComponent(value)}`;
+          if (options) {
+            if (options.maxAge) cookieString += `; max-age=${options.maxAge}`;
+            if (options.path) cookieString += `; path=${options.path}`;
+            if (options.domain) cookieString += `; domain=${options.domain}`;
+            if (options.secure) cookieString += `; secure`;
+            if (options.httpOnly) cookieString += `; httponly`;
+            if (options.sameSite) {
+              cookieString += `; samesite=${options.sameSite}`;
+            }
+          }
+          document.cookie = cookieString;
+        });
+      }
+    },
+  },
+});
 
 // Default user ID for development/testing (before auth is implemented)
 export const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';

@@ -1,0 +1,52 @@
+---
+export const prerender = false;
+
+import StudyMode from '../../../components/study/StudyMode';
+import { Toaster } from '../../../components/ui/sonner';
+import Topbar from '../../../components/layout/Topbar';
+
+// Pobranie parametru id z URL
+const { id } = Astro.params;
+
+// Walidacja parametru id (musi być liczbą)
+if (!id || isNaN(Number(id))) {
+  return Astro.redirect('/');
+}
+
+const deckId = Number(id);
+
+// Sprawdzenie autoryzacji przed renderowaniem
+const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+
+// Jeśli użytkownik nie jest zalogowany, przekieruj na stronę logowania
+if (!session) {
+  return Astro.redirect(`/login?redirect=/deck/${deckId}/study`);
+}
+
+// Meta tagi
+const title = 'Tryb nauki - 10xCards';
+const description = 'Przeglądaj fiszki w formie odwracalnych kart';
+---
+
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <Topbar client:load />
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+      <StudyMode deckId={deckId} client:load />
+    </main>
+    <Toaster client:load />
+  </body>
+</html>
+
+<style is:global>
+  @import '../../../styles/global.css';
+</style>
+

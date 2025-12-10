@@ -1,0 +1,81 @@
+---
+alwaysApply: true
+---
+;; rules.mdc – Tree-sitter highlights dla @ui-shadcn-helper MDC syntax
+;; Składnia: class="btn --primary --lg" lub class="card --bordered"
+
+; ------------------------------------------------------------------------
+; Klasy bazowe (pierwsza klasa po class= lub przed --)
+(base_class) @class.base
+
+; Modyfikatory (wszystko co zaczyna się od --)
+(
+  (attribute
+    name: (attribute_name) @attribute.name (#eq? @attribute.name "class")
+    value: (quoted_attribute_value
+             (attribute_value) @class.modifier
+             (#lua-match? @class.modifier "^%-%-")))
+)
+
+; Alternatywnie – jeśli parser traktuje całe attribute_value jako jeden node
+(
+  (attribute
+    name: (attribute_name) (#eq? @attribute_name "class"))
+  (quoted_attribute_value
+    (attribute_value) @class.full
+    (#match? @class.full "%-%-[%w-_]+")
+  )
+)
+
+; Podświetlanie poszczególnych modyfikatorów (najlepsze wyniki)
+; Wymaga, aby parser dzielił attribute_value na tokeny (wiele edytorów to robi)
+(
+  (attribute
+    name: (attribute_name) (#eq? @attribute_name "class"))
+  .
+  (quoted_attribute_value
+    (attribute_value) @class.modifier
+    (#lua-match? @class.modifier "^%-%-[%w-_]+"))
+)
+
+; Kolory dla konkretnych popularnych modyfikatorów shadcn (opcjonalne, ale przydatne)
+; --primary, --secondary, --destructive, --outline, --ghost, --link
+(@class.modifier
+  (#lua-match? @class.modifier "%-%-(primary|secondary|destructive|outline|ghost|link|accent|muted)")
+  @class.variant)
+
+; --sm, --md, --lg, --xl, --icon
+(@class.modifier
+  (#lua-match? @class.modifier "%-%-(sm|md|lg|xl|icon)")
+  @class.size)
+
+; --disabled, --loading, --bordered, --rounded, --shadow
+(@class.modifier
+  (#lua-match? @class.modifier "%-%-(disabled|loading|bordered|rounded|shadow|active|hover)")
+  @class.state)
+
+; ------------------------------------------------------------------------
+; Pozostałe popularne atrybuty w komponencie shadcn
+(attribute_name) @property (#match? @property "^(asChild|variant|size|className)$")
+
+; Podświetlanie wartości variant i size (gdy są podane jako osobne propsy)
+(attribute
+  name: (attribute_name) @property (#any-of? @property "variant" "size")
+  value: (quoted_attribute_value (attribute_value) @keyword))
+
+; ------------------------------------------------------------------------
+; Nazwy komponentów shadcn (np. Button, Card, Dialog itp.)
+; Zakładamy, że są pisane PascalCase w importach lub jako tagi JSX
+; Lista komponentów zgodna z dokumentacją Shadcn UI
+(element
+  (identifier) @constructor
+  (#lua-match? @constructor "^(Accordion|Alert|AlertDialog|AspectRatio|Avatar|Badge|Button|Calendar|Card|Checkbox|Collapsible|Command|ContextMenu|DataTable|DatePicker|Dialog|Drawer|DropdownMenu|Form|HoverCard|Input|Label|Menubar|NavigationMenu|Popover|Progress|RadioGroup|ScrollArea|Select|Separator|Sheet|Skeleton|Slider|Sonner|Switch|Table|Tabs|Textarea|Toast|Toggle|Tooltip)$")
+)
+
+; Jeśli używasz ich jako zwykłych tagów HTML (po transpilacji)
+(start_tag (tag_name) @tag (#lua-match? @tag "^[A-Z]"))
+
+; ------------------------------------------------------------------------
+; Komentarze i stringi (standardowo)
+(comment) @comment
+(string) @string
