@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Loader2 } from 'lucide-react';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Button } from '../ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
   fetchDeck,

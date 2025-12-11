@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { FlashcardListItem } from './FlashcardListItem';
 import type { FlashcardResponse } from '../../types';

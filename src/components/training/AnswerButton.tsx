@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Check, X } from 'lucide-react';
 import type { AnswerOption } from '../../lib/utils/training';
 

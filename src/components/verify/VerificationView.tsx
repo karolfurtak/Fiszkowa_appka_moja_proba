@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { supabaseClient } from '../../db/supabase.client';
-import { Button } from '../ui/button';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Input } from '../ui/input';
-import { Checkbox } from '../ui/checkbox';
-import { Label } from '../ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { FlashcardProposalResponse, DeckResponse, UpdateProposalRequest } from '../../types';

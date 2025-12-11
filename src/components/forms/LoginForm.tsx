@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { supabaseClient } from '../../db/supabase.client';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Button } from '../ui/button';
-import { Alert, AlertDescription } from '../ui/alert';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import type { AuthError } from '@supabase/supabase-js';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';

@@ -1,0 +1,48 @@
+---
+export const prerender = false;
+
+import KitchenSinkView from '../components/spectrum/KitchenSinkView';
+import { Toaster } from '@/components/ui/sonner';
+import Topbar from '../components/layout/Topbar';
+
+// Meta tagi
+const title = 'Kitchen Sink - Adobe Spectrum Components - 10xCards';
+const description = 'Prezentacja wszystkich komponentów Adobe Spectrum Design System';
+---
+
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <script is:inline>
+      // Inicjalizacja dark mode przed renderowaniem (zapobiega FOUC)
+      (function() {
+        const darkModeStorage = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const shouldUseDark = darkModeStorage !== null ? darkModeStorage === 'true' : prefersDark;
+        
+        if (shouldUseDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <Topbar client:load />
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+      <KitchenSinkView client:load />
+    </main>
+    <Toaster client:load />
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>
+

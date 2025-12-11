@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { Button } from '../ui/button';
-import { Textarea } from '../ui/textarea';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabaseClient } from '../../db/supabase.client';
 import type { GenerateFlashcardsRequest, GenerateFlashcardsResponse, ApiErrorResponse, ApiErrorCode } from '../../types';
 import { CharacterCounter } from './CharacterCounter';
 import { toast } from 'sonner';
-import { Info, Loader2 } from 'lucide-react';
+import { Info, Loader2, Upload, FileText } from 'lucide-react';
 
 /**
  * Stan formularza generatora fiszek
@@ -54,6 +54,12 @@ interface GeneratorFormState {
   
   // Stan accordion (zwinięty/rozwinięty)
   isAdvancedOpen: boolean;
+  
+  // Stan drag & drop
+  isDragging: boolean;
+  
+  // Tryb wprowadzania (upload/paste)
+  inputMode: 'upload' | 'paste';
 }
 
 /**
@@ -80,6 +86,8 @@ export default function GeneratorForm() {
     },
     isSubmitting: false,
     isAdvancedOpen: false,
+    isDragging: false,
+    inputMode: 'paste',
   });
   
   // Użyj useRef do przechowania aktualnego stanu dla submitForm
@@ -292,6 +300,144 @@ export default function GeneratorForm() {
       };
     });
   }, []);
+
+  /**
+   * Odczyt pliku tekstowego
+   */
+  const readTextFile = React.useCallback((file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        resolve(text);
+      };
+      reader.onerror = () => {
+        reject(new Error('Nie udało się odczytać pliku'));
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }, []);
+
+  /**
+   * Obsługa upuszczenia pliku
+   */
+  const handleFileDrop = React.useCallback(async (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setFormState(prev => ({ ...prev, isDragging: false }));
+
+    const files = Array.from(e.dataTransfer.files);
+    const textFile = files.find(file => {
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      return extension === 'txt' || file.type === 'text/plain';
+    });
+
+    if (!textFile) {
+      toast.error('Proszę upuścić plik tekstowy (.txt)');
+      return;
+    }
+
+    try {
+      const text = await readTextFile(textFile);
+      setFormState(prev => {
+        const error = validateSourceText(text);
+        return {
+          ...prev,
+          sourceText: text,
+          touched: { ...prev.touched, sourceText: true },
+          errors: {
+            ...prev.errors,
+            sourceText: error || undefined,
+          },
+        };
+      });
+      toast.success(`Plik "${textFile.name}" został wczytany`);
+    } catch (error) {
+      console.error('Error reading file:', error);
+      toast.error('Nie udało się odczytać pliku. Sprawdź czy plik jest poprawny.');
+    }
+  }, [readTextFile]);
+
+  /**
+   * Obsługa przeciągania nad polem
+   */
+  const handleDragOver = React.useCallback((e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFormState(prev => ({ ...prev, isDragging: true }));
+  }, []);
+
+  /**
+   * Obsługa opuszczenia obszaru przeciągania
+   */
+  const handleDragLeave = React.useCallback((e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFormState(prev => ({ ...prev, isDragging: false }));
+  }, []);
+
+  /**
+   * Obsługa kliknięcia w pole (opcjonalnie - wybór pliku przez input)
+   */
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const handleTextareaClick = React.useCallback(() => {
+    // Opcjonalnie: można dodać wybór pliku przez input
+    // fileInputRef.current?.click();
+  }, []);
+
+  /**
+   * Obsługa kliknięcia w obszar drag & drop (wybór pliku)
+   */
+  const handleDropZoneClick = React.useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  /**
+   * Przełączanie trybu wprowadzania
+   */
+  const handleInputModeChange = React.useCallback((mode: 'upload' | 'paste') => {
+    setFormState(prev => ({ ...prev, inputMode: mode }));
+  }, []);
+
+  /**
+   * Obsługa wyboru pliku przez input
+   */
+  const handleFileSelect = React.useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    if (extension !== 'txt' && file.type !== 'text/plain') {
+      toast.error('Proszę wybrać plik tekstowy (.txt)');
+      return;
+    }
+
+    try {
+      const text = await readTextFile(file);
+      setFormState(prev => {
+        const error = validateSourceText(text);
+        return {
+          ...prev,
+          sourceText: text,
+          touched: { ...prev.touched, sourceText: true },
+          errors: {
+            ...prev.errors,
+            sourceText: error || undefined,
+          },
+        };
+      });
+      toast.success(`Plik "${file.name}" został wczytany`);
+    } catch (error) {
+      console.error('Error reading file:', error);
+      toast.error('Nie udało się odczytać pliku. Sprawdź czy plik jest poprawny.');
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [readTextFile]);
 
   /**
    * Obsługa zmiany języka
@@ -827,35 +973,146 @@ export default function GeneratorForm() {
       <form onSubmit={handleSubmit} className="space-y-6" noValidate aria-label="Formularz generowania fiszek">
         {/* Sekcja podstawowa */}
         <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Label htmlFor="sourceText">Tekst źródłowy</Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  aria-label="Informacja o polu tekstu źródłowego"
-                >
-                  <Info className="h-4 w-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>Wklej tekst, z którego mają zostać wygenerowane fiszki. Tekst musi zawierać co najmniej 100 znaków.</p>
-              </TooltipContent>
-            </Tooltip>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Label htmlFor="sourceText">Tekst źródłowy</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    aria-label="Informacja o polu tekstu źródłowego"
+                  >
+                    <Info className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>Wklej tekst, z którego mają zostać wygenerowane fiszki lub upuść plik tekstowy (.txt). Tekst musi zawierać co najmniej 100 znaków.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            
+            {/* Przełącznik trybów */}
+            <div className="flex items-center gap-2 border rounded-md p-1">
+              <button
+                type="button"
+                onClick={() => handleInputModeChange('upload')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  formState.inputMode === 'upload'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                aria-label="Tryb wczytywania plików"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Wczytaj plik</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleInputModeChange('paste')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  formState.inputMode === 'paste'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                aria-label="Tryb wklejania tekstu"
+              >
+                <FileText className="h-4 w-4" />
+                <span>Wklej tekst</span>
+              </button>
+            </div>
           </div>
-        <Textarea
-          id="sourceText"
-          value={formState.sourceText}
-          onChange={handleSourceTextChange}
-          onBlur={handleSourceTextBlur}
-          placeholder="Wklej tutaj tekst, z którego mają zostać wygenerowane fiszki..."
-          className={`min-h-[200px] ${formState.errors.sourceText ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-          rows={10}
-          aria-describedby={formState.errors.sourceText ? 'sourceText-error sourceText-counter' : 'sourceText-counter'}
-          aria-invalid={!!formState.errors.sourceText}
-          aria-required="true"
-        />
+
+          {/* Obszar drag & drop (tryb upload) */}
+          {formState.inputMode === 'upload' && (
+            <div
+              onDrop={handleFileDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onClick={handleDropZoneClick}
+              className={`relative border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
+                formState.isDragging
+                  ? 'border-primary bg-primary/5'
+                  : formState.errors.sourceText
+                  ? 'border-destructive bg-destructive/5'
+                  : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+              }`}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleDropZoneClick();
+                }
+              }}
+              aria-label="Obszar wczytywania pliku tekstowego"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".txt,text/plain"
+                onChange={handleFileSelect}
+                className="hidden"
+                aria-label="Wybierz plik tekstowy"
+              />
+              <div className="flex flex-col items-center gap-4">
+                <div className={`rounded-full p-4 ${
+                  formState.isDragging
+                    ? 'bg-primary/10'
+                    : 'bg-muted'
+                }`}>
+                  <Upload className={`h-8 w-8 ${
+                    formState.isDragging
+                      ? 'text-primary'
+                      : 'text-muted-foreground'
+                  }`} />
+                </div>
+                <div>
+                  <p className={`text-lg font-medium mb-1 ${
+                    formState.isDragging
+                      ? 'text-primary'
+                      : 'text-foreground'
+                  }`}>
+                    {formState.isDragging
+                      ? 'Upuść plik tutaj...'
+                      : 'Przeciągnij i upuść plik tutaj lub kliknij, aby wybrać'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Obsługiwane formaty: .txt
+                  </p>
+                </div>
+              </div>
+              {formState.sourceText && (
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-sm text-muted-foreground">
+                    Wczytano: {formState.sourceText.length} znaków
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Pole tekstowe (tryb paste) */}
+          {formState.inputMode === 'paste' && (
+            <div className="relative">
+              <Textarea
+                id="sourceText"
+                value={formState.sourceText}
+                onChange={handleSourceTextChange}
+                onBlur={handleSourceTextBlur}
+                placeholder="Wklej tutaj tekst, z którego mają zostać wygenerowane fiszki..."
+                className={`min-h-[200px] transition-colors ${
+                  formState.errors.sourceText 
+                    ? 'border-destructive focus-visible:ring-destructive' 
+                    : ''
+                }`}
+                rows={10}
+                aria-describedby={formState.errors.sourceText ? 'sourceText-error sourceText-counter' : 'sourceText-counter'}
+                aria-invalid={!!formState.errors.sourceText}
+                aria-required="true"
+              />
+            </div>
+          )}
         {formState.touched.sourceText && formState.errors.sourceText && (
           <Alert variant="destructive" id="sourceText-error" role="alert" aria-live="polite">
             <AlertDescription>{formState.errors.sourceText}</AlertDescription>

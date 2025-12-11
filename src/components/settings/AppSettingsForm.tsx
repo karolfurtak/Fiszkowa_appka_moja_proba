@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { Label } from '../ui/label';
-import { Switch } from '../ui/switch';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Alert, AlertDescription } from '../ui/alert';
+} from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle2 } from 'lucide-react';
 
 /**

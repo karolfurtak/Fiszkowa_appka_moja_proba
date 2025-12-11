@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox';
-import { Card, CardContent, CardHeader } from '../ui/card';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Edit2, RotateCcw, X } from 'lucide-react';
 import type { FlashcardProposalResponse } from '../../types';
 

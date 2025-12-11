@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Loader2, X } from 'lucide-react';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Button } from '../ui/button';
-import { Progress } from '../ui/progress';
-import { Card, CardContent } from '../ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { fetchFlashcardsDueForReview, submitQuizAnswer } from '../../lib/api/training';
 import { generateDistractors, createAnswerOptions, type AnswerOption } from '../../lib/utils/training';

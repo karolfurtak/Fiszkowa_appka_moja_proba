@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Progress } from '../ui/progress';
-import { Button } from '../ui/button';
-import { Alert, AlertDescription } from '../ui/alert';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGenerationPolling } from '@/hooks/useGenerationPolling';

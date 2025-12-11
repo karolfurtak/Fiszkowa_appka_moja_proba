@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { supabaseClient } from '../../db/supabase.client';
-import { Button } from '../ui/button';
-import { LogOut, Home, Sparkles, Settings, Trophy } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { LogOut, Home, Sparkles, Settings, Trophy, Moon, Sun } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePathname } from '../../hooks/usePathname';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * Komponent Topbar - główna nawigacja aplikacji
@@ -13,6 +14,7 @@ import { usePathname } from '../../hooks/usePathname';
  */
 export default function Topbar() {
   const pathname = usePathname();
+  const { darkMode, toggleTheme, isInitialized } = useTheme();
 
   /**
    * Obsługa wylogowania
@@ -77,6 +79,25 @@ export default function Topbar() {
 
         {/* Przyciski po prawej stronie */}
         <div className="flex items-center gap-2">
+          {/* Przełącznik dark mode */}
+          {isInitialized && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="gap-2"
+              aria-label={darkMode ? 'Przełącz na tryb jasny' : 'Przełącz na tryb ciemny'}
+            >
+              {darkMode ? (
+                <Sun className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Moon className="h-4 w-4" aria-hidden="true" />
+              )}
+              <span className="hidden sm:inline">
+                {darkMode ? 'Jasny' : 'Ciemny'}
+              </span>
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"

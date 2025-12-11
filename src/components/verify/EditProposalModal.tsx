@@ -6,12 +6,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
-import { Input } from '../ui/input';
-import { Alert, AlertDescription } from '../ui/alert';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
 import type { FlashcardProposalResponse, UpdateProposalRequest } from '../../types';
 
@@ -91,13 +91,14 @@ export function EditProposalModal({
 
   /**
    * Walidacja pytania
+   * Zgodnie z ograniczeniami bazy danych: 2-10000 znaków
    */
   const validateQuestion = (question: string): string | undefined => {
     if (!question.trim()) {
       return 'Pytanie jest wymagane';
     }
-    if (question.length < 1000) {
-      return `Pytanie musi zawierać co najmniej 1000 znaków (obecnie: ${question.length} znaków)`;
+    if (question.length < 2) {
+      return `Pytanie musi zawierać co najmniej 2 znaki (obecnie: ${question.length} znaków)`;
     }
     if (question.length > 10000) {
       return `Pytanie nie może przekraczać 10000 znaków (obecnie: ${question.length} znaków)`;
@@ -210,15 +211,15 @@ export function EditProposalModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] !flex !flex-col !gap-0 p-0 overflow-hidden !top-[5vh] !-translate-y-0">
+        <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4 border-b">
           <DialogTitle>Edytuj propozycję</DialogTitle>
           <DialogDescription>
             Wprowadź zmiany w propozycji fiszki. Wszystkie pola są walidowane przed zapisaniem.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 px-6 py-4 flex-1 overflow-y-auto overflow-x-hidden min-h-0">
           {/* Pole pytania */}
           <div className="space-y-2">
             <Label htmlFor="edit-question">
@@ -250,7 +251,7 @@ export function EditProposalModal({
             />
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground">
-                {state.question.length} / 1000-10000 znaków
+                {state.question.length} / 2-10000 znaków
               </p>
               {state.errors.question && (
                 <p
@@ -398,7 +399,7 @@ export function EditProposalModal({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 border-t px-6 py-4 bg-background">
           <Button
             variant="outline"
             onClick={handleClose}

@@ -5,15 +5,16 @@ import {
   verifyOldPassword,
   updatePassword,
   saveUserPreferences,
+  loadAppSettings,
   saveAppSettings,
   deleteAccount,
 } from '../../lib/api/settings';
 import type { ProfileResponse } from '../../types';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PasswordChangeForm } from './PasswordChangeForm';
 import { UserPreferencesForm } from './UserPreferencesForm';
 import { AppSettingsForm } from './AppSettingsForm';
@@ -127,25 +128,16 @@ export default function SettingsView() {
       // Pobierz preferencje z localStorage
       const savedPreferences = localStorage.getItem('userPreferences') || '';
 
-      // Pobierz ustawienia aplikacji z localStorage
-      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-      const savedViewMode = (localStorage.getItem('verificationViewMode') ||
-        'pagination') as 'pagination' | 'infinite-scroll';
-
-      // Synchronizacja dark mode z <html> elementem
-      if (savedDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      // Pobierz ustawienia aplikacji używając loadAppSettings
+      const appSettings = loadAppSettings();
 
       setState((prev) => ({
         ...prev,
         userProfile: profile,
         userEmail: session.user.email || null,
         userPreferences: savedPreferences,
-        darkMode: savedDarkMode,
-        verificationViewMode: savedViewMode,
+        darkMode: appSettings.darkMode,
+        verificationViewMode: appSettings.verificationViewMode,
         isLoading: false,
       }));
     } catch (error) {

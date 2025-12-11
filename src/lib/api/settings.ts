@@ -178,6 +178,26 @@ export async function saveUserPreferences(userId: string, preferences: string): 
 }
 
 /**
+ * Wczytuje ustawienia aplikacji z localStorage
+ * Zwraca domyślne wartości jeśli ustawienia nie istnieją
+ */
+export function loadAppSettings(): { darkMode: boolean; verificationViewMode: 'pagination' | 'infinite-scroll' } {
+  // Sprawdź preferencje systemowe dla dark mode
+  const prefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  // Wczytaj z localStorage lub użyj preferencji systemowych
+  const darkModeStorage = typeof window !== 'undefined' ? localStorage.getItem('darkMode') : null;
+  const darkMode = darkModeStorage !== null ? darkModeStorage === 'true' : prefersDark;
+  
+  const verificationViewMode = (typeof window !== 'undefined' ? localStorage.getItem('verificationViewMode') : null) as 'pagination' | 'infinite-scroll' | null;
+  
+  return {
+    darkMode,
+    verificationViewMode: verificationViewMode || 'pagination',
+  };
+}
+
+/**
  * Zapisuje ustawienia aplikacji do localStorage
  */
 export function saveAppSettings(settings: { darkMode: boolean; verificationViewMode: 'pagination' | 'infinite-scroll' }): void {

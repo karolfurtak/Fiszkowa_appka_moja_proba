@@ -6,11 +6,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
-import { Button } from '../ui/button';
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import type { FlashcardResponse, UpdateFlashcardRequest } from '../../types';
 
@@ -252,16 +252,20 @@ export const FlashcardModal = React.memo(function FlashcardModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent onKeyDown={handleKeyDown} aria-describedby="flashcard-modal-description">
-        <DialogHeader>
+      <DialogContent 
+        onKeyDown={handleKeyDown} 
+        aria-describedby="flashcard-modal-description"
+        className="max-w-2xl max-h-[90vh] !flex !flex-col !gap-0 p-0 overflow-hidden !top-[5vh] !-translate-y-0"
+      >
+        <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4 border-b">
           <DialogTitle>Edytuj fiszkę</DialogTitle>
           <DialogDescription id="flashcard-modal-description">
             Zmień pytanie, odpowiedź lub obrazek dla tej fiszki.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="space-y-4 px-6 py-4 flex-1 overflow-y-auto overflow-x-hidden min-h-0">
             <div className="space-y-2">
               <Label htmlFor="flashcard-question">Pytanie</Label>
               <Textarea
@@ -331,7 +335,7 @@ export const FlashcardModal = React.memo(function FlashcardModal({
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-shrink-0 border-t px-6 py-4 bg-background">
             <Button
               type="button"
               variant="outline"

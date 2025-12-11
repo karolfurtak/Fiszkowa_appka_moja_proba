@@ -16,8 +16,8 @@ import { DeckCard } from './DeckCard';
 import { CreateDeckDialog } from './CreateDeckDialog';
 import { EditDeckDialog } from './EditDeckDialog';
 import { DeleteDeckDialog } from './DeleteDeckDialog';
-import { Button } from '../ui/button';
-import { Alert, AlertDescription } from '../ui/alert';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 /**
  * Stan komponentu DashboardView

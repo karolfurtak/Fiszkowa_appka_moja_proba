@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Input } from '../ui/input';
+import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
 /**
  * Propsy komponentu SearchBar

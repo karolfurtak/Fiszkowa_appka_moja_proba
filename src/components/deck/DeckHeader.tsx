@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Play, BookOpen, Plus, Edit, Trash2 } from 'lucide-react';
 import type { DeckResponse, DeckStats } from '../../types';
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Badge } from '../ui/badge';
+import { Badge } from '@/components/ui/badge';
 import type { FlashcardResponse } from '../../types';
 
 /**

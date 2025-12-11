@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import GeneratorForm from '../components/forms/GeneratorForm';
-import { Toaster } from '../components/ui/sonner';
+import { Toaster } from '@/components/ui/sonner';
 import Topbar from '../components/layout/Topbar';
 
 // Sprawdzenie autoryzacji przed renderowaniem
@@ -26,6 +26,20 @@ const description = 'Wygeneruj fiszki z tekstu źródłowego za pomocą AI';
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <script is:inline>
+      // Inicjalizacja dark mode przed renderowaniem (zapobiega FOUC)
+      (function() {
+        const darkModeStorage = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const shouldUseDark = darkModeStorage !== null ? darkModeStorage === 'true' : prefersDark;
+        
+        if (shouldUseDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <Topbar client:load />
