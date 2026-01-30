@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
-import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
+import node from '@astrojs/node';
 import { resolve } from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
@@ -13,15 +13,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
+  output: 'hybrid',
+  adapter: node({ mode: 'standalone' }),
   server: {
     port: 3000,
     host: true
   },
 
-  // API routes work in dev mode without output configuration
-  // The endpoint has 'export const prerender = false' which makes it dynamic
-  // For production, you may need 'output: "server"' with an adapter
-  integrations: [tailwind(), react()],
+  // Tailwind 4 is used via @tailwindcss/vite in vite.plugins (no @astrojs/tailwind)
+  integrations: [react()],
 
   vite: {
     plugins: [tailwindcss()],

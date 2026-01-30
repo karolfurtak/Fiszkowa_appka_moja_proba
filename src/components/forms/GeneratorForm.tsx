@@ -745,8 +745,11 @@ export default function GeneratorForm() {
       case 'RATE_LIMIT_EXCEEDED':
         return { message: 'Zbyt wiele żądań. Spróbuj ponownie za chwilę.' };
       
+      case 'CONFIGURATION_ERROR':
+        return { message: errorMessage || 'Błąd konfiguracji serwera. Sprawdź zmienne środowiskowe (.env).' };
+      
       case 'INTERNAL_ERROR':
-        return { message: 'Wystąpił błąd serwera podczas generowania fiszek. Spróbuj ponownie.' };
+        return { message: errorMessage || 'Wystąpił błąd serwera podczas generowania fiszek. Spróbuj ponownie.' };
       
       default:
         // Mapowanie kodów statusu HTTP na komunikaty
@@ -757,7 +760,7 @@ export default function GeneratorForm() {
           return { message: 'Sesja wygasła. Zaloguj się ponownie.' };
         }
         if (statusCode === 500) {
-          return { message: 'Wystąpił błąd serwera podczas generowania fiszek. Spróbuj ponownie.' };
+          return { message: errorMessage || 'Wystąpił błąd serwera podczas generowania fiszek. Spróbuj ponownie.' };
         }
         return { message: errorMessage || 'Wystąpił nieoczekiwany błąd. Spróbuj ponownie.' };
     }

@@ -7,7 +7,14 @@ const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+  const missing = [
+    !supabaseUrl && 'PUBLIC_SUPABASE_URL',
+    !supabaseAnonKey && 'PUBLIC_SUPABASE_ANON_KEY',
+  ].filter(Boolean) as string[];
+  throw new Error(
+    `Missing Supabase env: ${missing.join(', ')}. ` +
+      'Lokalnie: uruchom "npx supabase start", potem "npx supabase status" i wklej "anon key" do .env jako PUBLIC_SUPABASE_ANON_KEY.'
+  );
 }
 
 // Create browser client that syncs with SSR cookies

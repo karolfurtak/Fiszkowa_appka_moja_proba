@@ -538,6 +538,7 @@ export type ApiErrorCode =
   | 'FORBIDDEN'
   | 'NOT_FOUND'
   | 'CONFLICT'
+  | 'CONFIGURATION_ERROR'
   | 'RATE_LIMIT_EXCEEDED'
   | 'INTERNAL_ERROR';
 
