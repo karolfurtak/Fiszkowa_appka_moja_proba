@@ -16,7 +16,7 @@
 export interface OpenRouterServiceConfig {
   apiKey: string;                    // Wymagane: OpenRouter API key
   baseUrl?: string;                  // Opcjonalne: URL API (domyślnie: 'https://openrouter.ai/api/v1')
-  defaultModel?: string;             // Opcjonalne: Domyślny model (domyślnie: 'amazon/nova-2-lite-v1:free')
+  defaultModel?: string;             // Opcjonalne: Domyślny model (domyślnie: 'arcee-ai/trinity-mini:free')
   defaultTimeout?: number;           // Opcjonalne: Domyślny timeout w ms (domyślnie: 30000)
   maxRetries?: number;               // Opcjonalne: Maksymalna liczba ponownych prób (domyślnie: 3)
   retryDelay?: number;               // Opcjonalne: Opóźnienie między ponownymi próbami w ms (domyślnie: 1000)
@@ -237,7 +237,7 @@ export class OpenRouterService {
     }
 
     // Ustawienie pozostałych pól z walidacją
-    this.defaultModel = config.defaultModel || 'amazon/nova-2-lite-v1:free';
+    this.defaultModel = config.defaultModel || 'arcee-ai/trinity-mini:free';
     this.defaultTimeout = this.validateTimeout(config.defaultTimeout || 30000);
     this.maxRetries = this.validateRetries(config.maxRetries || 3);
     this.retryDelay = this.validateRetryDelay(config.retryDelay || 1000);

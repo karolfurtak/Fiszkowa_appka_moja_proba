@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { supabaseClient } from '../../db/supabase.client';
 import { Button } from '@/components/ui/button';
-import { LogOut, Home, Sparkles, Settings, Trophy, Moon, Sun } from 'lucide-react';
+import { LogOut, Home, Sparkles, Settings, Moon, Sun, Menu } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePathname } from '../../hooks/usePathname';
 import { useTheme } from '@/hooks/useTheme';
+import { MobileMenu } from './MobileMenu';
 
 /**
  * Komponent Topbar - główna nawigacja aplikacji
@@ -15,6 +16,7 @@ import { useTheme } from '@/hooks/useTheme';
 export default function Topbar() {
   const pathname = usePathname();
   const { darkMode, toggleTheme, isInitialized } = useTheme();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   /**
    * Obsługa wylogowania
@@ -61,7 +63,7 @@ export default function Topbar() {
             aria-label="Przejdź do dashboardu"
           >
             <Home className="h-5 w-5" aria-hidden="true" />
-            <span className="hidden sm:inline">10xCards</span>
+            <span className="hidden sm:inline">Fiszki-MyAPP</span>
           </a>
 
           <div className="hidden md:flex items-center gap-1">
@@ -77,8 +79,8 @@ export default function Topbar() {
           </div>
         </div>
 
-        {/* Przyciski po prawej stronie */}
-        <div className="flex items-center gap-2">
+        {/* Przyciski po prawej stronie - Desktop */}
+        <div className="hidden md:flex items-center gap-2">
           {/* Przełącznik dark mode */}
           {isInitialized && (
             <Button
@@ -109,7 +111,31 @@ export default function Topbar() {
             <span className="hidden sm:inline">Wyloguj</span>
           </Button>
         </div>
+
+        {/* Hamburger button - Mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={() => setIsMobileMenuOpen(true)}
+          aria-label="Otwórz menu"
+          aria-expanded={isMobileMenuOpen}
+        >
+          <Menu className="h-5 w-5" aria-hidden="true" />
+        </Button>
       </div>
+
+      {/* Mobile Menu */}
+      {isInitialized && (
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          pathname={pathname}
+          darkMode={darkMode}
+          onToggleTheme={toggleTheme}
+          onLogout={handleLogout}
+        />
+      )}
     </nav>
   );
 }

@@ -52,15 +52,15 @@ export const SearchBar = React.memo(function SearchBar({
   }, [onSearchChange]);
 
   return (
-    <div className={`relative flex items-center ${className || ''}`}>
-      <Search className="absolute left-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+    <div className={`relative ${className || ''}`}>
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
       <Input
         ref={inputRef}
         type="text"
         placeholder="Szukaj talii..."
         value={searchQuery}
         onChange={handleChange}
-        className="pl-9 pr-9"
+        className="pl-10 pr-10"
         aria-label="Szukaj talii"
         aria-describedby="search-description"
       />
@@ -70,7 +70,7 @@ export const SearchBar = React.memo(function SearchBar({
           variant="ghost"
           size="icon"
           onClick={handleClear}
-          className="absolute right-1 h-7 w-7"
+          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
           aria-label="Wyczyść wyszukiwanie"
         >
           <X className="h-4 w-4" />
@@ -82,4 +82,3 @@ export const SearchBar = React.memo(function SearchBar({
     </div>
   );
 });
-

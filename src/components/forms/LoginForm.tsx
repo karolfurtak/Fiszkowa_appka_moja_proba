@@ -4,9 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import type { AuthError } from '@supabase/supabase-js';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail, Lock, Check, ArrowRight } from 'lucide-react';
 
 /**
  * Propsy komponentu LoginForm
@@ -331,44 +332,68 @@ export default function LoginForm({ redirectUrl }: LoginFormProps) {
     );
   }
 
+  // Check if email is valid for showing success indicator
+  const isEmailValid = formState.email.trim().length > 0 && validateEmail(formState.email) === null;
+
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        {/* Pole Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            ref={emailInputRef}
-            id="email"
-            type="email"
-            value={formState.email}
-            onChange={handleEmailChange}
-            onBlur={handleEmailBlur}
-            autoComplete="email"
-            required
-            aria-label="Email"
-            aria-describedby={formState.emailError ? emailErrorId : undefined}
-            aria-invalid={formState.emailError !== null}
-            disabled={formState.isSubmitting || formState.isCheckingSession}
-            className={formState.emailError ? 'border-destructive focus-visible:ring-destructive' : ''}
-          />
+        {/* EMAIL FIELD */}
+        <div className="space-y-1">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground">
+            Email
+          </label>
+          <div className="relative">
+            {/* Mail icon - LEFT side, vertically centered */}
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Mail className="h-5 w-5 text-muted-foreground" />
+            </span>
+            <input
+              ref={emailInputRef}
+              id="email"
+              type="email"
+              value={formState.email}
+              onChange={handleEmailChange}
+              onBlur={handleEmailBlur}
+              autoComplete="email"
+              required
+              aria-describedby={formState.emailError ? emailErrorId : undefined}
+              aria-invalid={formState.emailError !== null}
+              disabled={formState.isSubmitting || formState.isCheckingSession}
+              placeholder="twoj@email.pl"
+              className={`block w-full h-11 pl-10 pr-10 text-foreground bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary transition-colors ${
+                formState.emailError
+                  ? 'border-destructive focus:ring-destructive'
+                  : isEmailValid && formState.isEmailTouched
+                  ? 'border-green-500 focus:ring-green-500'
+                  : 'border-input'
+              }`}
+            />
+            {/* Check icon - RIGHT side, vertically centered (only when valid) */}
+            {isEmailValid && formState.isEmailTouched && !formState.emailError && (
+              <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <Check className="h-5 w-5 text-green-500" />
+              </span>
+            )}
+          </div>
           {formState.emailError && (
-            <p
-              id={emailErrorId}
-              className="text-sm text-destructive font-medium"
-              role="alert"
-              aria-live="polite"
-            >
+            <p id={emailErrorId} className="text-sm text-destructive" role="alert">
               {formState.emailError}
             </p>
           )}
         </div>
 
-        {/* Pole Hasło */}
-        <div className="space-y-2">
-          <Label htmlFor="password">Hasło</Label>
+        {/* PASSWORD FIELD */}
+        <div className="space-y-1">
+          <label htmlFor="password" className="block text-sm font-medium text-foreground">
+            Hasło
+          </label>
           <div className="relative">
-            <Input
+            {/* Lock icon - LEFT side, vertically centered */}
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Lock className="h-5 w-5 text-muted-foreground" />
+            </span>
+            <input
               id="password"
               type={formState.showPassword ? 'text' : 'password'}
               value={formState.password}
@@ -376,70 +401,73 @@ export default function LoginForm({ redirectUrl }: LoginFormProps) {
               onBlur={handlePasswordBlur}
               autoComplete="current-password"
               required
-              aria-label="Hasło"
               aria-describedby={formState.passwordError ? passwordErrorId : undefined}
               aria-invalid={formState.passwordError !== null}
               disabled={formState.isSubmitting}
-              className={formState.passwordError ? 'border-destructive pr-10' : 'pr-10'}
+              placeholder="Wprowadź hasło"
+              className={`block w-full h-11 pl-10 pr-10 text-foreground bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary transition-colors ${
+                formState.passwordError
+                  ? 'border-destructive focus:ring-destructive'
+                  : 'border-input'
+              }`}
             />
+            {/* Eye button - RIGHT side, vertically centered, CLICKABLE */}
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground transition-colors"
               aria-label={formState.showPassword ? 'Ukryj hasło' : 'Pokaż hasło'}
               tabIndex={-1}
             >
               {formState.showPassword ? (
-                <EyeOff className="h-4 w-4" />
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <Eye className="h-4 w-4" />
+                <Eye className="h-5 w-5" />
               )}
             </button>
           </div>
           {formState.passwordError && (
-            <p
-              id={passwordErrorId}
-              className="text-sm text-destructive font-medium"
-              role="alert"
-              aria-live="polite"
-            >
+            <p id={passwordErrorId} className="text-sm text-destructive" role="alert">
               {formState.passwordError}
             </p>
           )}
         </div>
 
-        {/* Komunikat błędu ogólnego */}
+        {/* Error Alert */}
         {formState.errorMessage && (
           <Alert variant="destructive" role="alert" aria-live="assertive">
             <AlertDescription>{formState.errorMessage}</AlertDescription>
           </Alert>
         )}
 
-        {/* Przycisk Submit */}
+        {/* Submit Button */}
         <Button
           type="submit"
           disabled={!canSubmit || formState.isCheckingSession}
-          className="w-full"
-          aria-label="Zaloguj się"
+          className="w-full h-11 mt-2"
         >
           {formState.isSubmitting ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
               Logowanie...
             </>
           ) : (
-            'Zaloguj się'
+            <>
+              Zaloguj się
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </>
           )}
         </Button>
       </form>
 
-      {/* Link do rejestracji */}
-      <div className="text-center text-sm">
+      {/* Register Link */}
+      <div className="text-center text-sm text-muted-foreground">
+        Nie masz konta?{' '}
         <a
           href={`/register${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`}
-          className="text-primary hover:underline"
+          className="text-primary hover:underline font-medium"
         >
-          Nie masz konta? Zarejestruj się
+          Zarejestruj się
         </a>
       </div>
     </div>

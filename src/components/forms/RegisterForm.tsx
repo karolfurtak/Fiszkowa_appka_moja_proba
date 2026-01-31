@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import type { AuthError } from '@supabase/supabase-js';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail, Lock, ShieldCheck } from 'lucide-react';
 import { PasswordStrengthIndicator } from './PasswordStrengthIndicator';
 
 /**
@@ -529,12 +529,14 @@ export default function RegisterForm() {
             aria-describedby={formState.errors.email ? emailErrorId : undefined}
             aria-invalid={!!formState.errors.email}
             disabled={formState.isSubmitting || formState.isCheckingSession}
-            className={formState.errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+            icon={<Mail className="h-4 w-4" />}
+            placeholder="twoj@email.pl"
+            className={formState.errors.email ? 'border-destructive focus-visible:ring-destructive animate-shake' : ''}
           />
           {formState.errors.email && (
             <p
               id={emailErrorId}
-              className="text-sm text-destructive font-medium"
+              className="text-sm text-destructive font-medium animate-slide-up-fade"
               role="alert"
               aria-live="polite"
             >
@@ -560,12 +562,14 @@ export default function RegisterForm() {
               aria-describedby={formState.errors.password ? passwordErrorId : undefined}
               aria-invalid={!!formState.errors.password}
               disabled={formState.isSubmitting}
-              className={formState.errors.password ? 'border-destructive pr-10' : 'pr-10'}
+              icon={<Lock className="h-4 w-4" />}
+              placeholder="Min. 6 znaków"
+              className={formState.errors.password ? 'border-destructive pr-10 animate-shake' : 'pr-10'}
             />
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-all duration-200 hover:scale-110"
               aria-label={formState.showPassword ? 'Ukryj hasło' : 'Pokaż hasło'}
               tabIndex={-1}
             >
@@ -613,12 +617,14 @@ export default function RegisterForm() {
               aria-describedby={formState.errors.confirmPassword ? confirmPasswordErrorId : undefined}
               aria-invalid={!!formState.errors.confirmPassword}
               disabled={formState.isSubmitting}
-              className={formState.errors.confirmPassword ? 'border-destructive pr-10' : 'pr-10'}
+              icon={<ShieldCheck className="h-4 w-4" />}
+              placeholder="Powtórz hasło"
+              className={formState.errors.confirmPassword ? 'border-destructive pr-10 animate-shake' : 'pr-10'}
             />
             <button
               type="button"
               onClick={toggleConfirmPasswordVisibility}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-all duration-200 hover:scale-110"
               aria-label={formState.showConfirmPassword ? 'Ukryj potwierdzenie hasła' : 'Pokaż potwierdzenie hasła'}
               tabIndex={-1}
             >
@@ -632,7 +638,7 @@ export default function RegisterForm() {
           {formState.errors.confirmPassword && (
             <p
               id={confirmPasswordErrorId}
-              className="text-sm text-destructive font-medium"
+              className="text-sm text-destructive font-medium animate-slide-up-fade"
               role="alert"
               aria-live="polite"
             >

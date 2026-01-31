@@ -216,7 +216,7 @@ export const POST: APIRoute = async ({ request }) => {
         apiKey: openRouterApiKey,
         httpReferer: supabaseUrl,
         httpTitle: '10xCards',
-        defaultModel: 'amazon/nova-2-lite-v1:free',
+        defaultModel: 'arcee-ai/trinity-mini:free',
         defaultTimeout: 30000,
         maxRetries: 3,
         retryDelay: 1000,

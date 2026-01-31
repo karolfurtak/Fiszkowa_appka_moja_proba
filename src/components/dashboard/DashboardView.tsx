@@ -9,13 +9,14 @@ import {
 } from '../../lib/api/decks';
 import type { DeckViewModel } from '../../types';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 import { EmptyState } from './EmptyState';
 import { DeckCard } from './DeckCard';
 import { CreateDeckDialog } from './CreateDeckDialog';
 import { EditDeckDialog } from './EditDeckDialog';
 import { DeleteDeckDialog } from './DeleteDeckDialog';
+import { StatsOverview } from './StatsOverview';
+import { DashboardSkeleton } from './DashboardSkeleton';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -299,12 +300,26 @@ export default function DashboardView() {
     [loadDecks]
   );
 
+  // Show skeleton during initial loading
+  if (state.isLoading) {
+    return (
+      <main className="space-y-8" aria-busy="true" aria-label="Ładowanie dashboardu">
+        <DashboardSkeleton />
+      </main>
+    );
+  }
+
   return (
     <main className="space-y-8">
+      {/* Stats Overview - pokazuj tylko gdy są dane */}
+      {!state.error && state.decks.length > 0 && (
+        <StatsOverview decks={state.decks} />
+      )}
+
       {/* Nagłówek */}
       <header className="space-y-4">
         <h1 className="text-3xl font-bold">Moje talie</h1>
-        
+
         {/* Wyszukiwarka i przyciski akcji */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <div className="flex-1 max-w-md">
@@ -328,11 +343,7 @@ export default function DashboardView() {
 
       {/* Sekcja z taliami */}
       <section aria-label="Lista talii">
-        {state.isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Ładowanie talii" />
-          </div>
-        ) : state.error ? (
+        {state.error ? (
           <Alert variant="destructive" className="w-full max-w-md mx-auto" role="alert">
             <AlertDescription>{state.error}</AlertDescription>
             <div className="mt-4">

@@ -26,7 +26,7 @@ export const GET: APIRoute = async () => {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'amazon/nova-2-lite-v1:free',
+        model: 'arcee-ai/trinity-mini:free',
         messages: [{ role: 'user', content: 'Say OK' }],
         max_tokens: 5,
       }),

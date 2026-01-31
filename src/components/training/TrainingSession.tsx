@@ -11,6 +11,8 @@ import type { FlashcardResponse } from '../../types';
 import { AnswerButton } from './AnswerButton';
 import { SummaryScreen } from './SummaryScreen';
 import type { SessionAnswer } from './IncorrectAnswerItem';
+import { StreakTracker } from '../gamification/StreakTracker';
+import { ProgressMilestones } from '../gamification/ProgressMilestones';
 
 /**
  * Propsy komponentu TrainingSession
@@ -430,11 +432,21 @@ export default function TrainingSession({ deckId }: TrainingSessionProps) {
                 <span className="text-sm font-medium">
                   {state.currentFlashcardIndex + 1} / {state.flashcards.length}
                 </span>
-                <span className="text-sm text-muted-foreground">
-                  {Math.round(stats.progress)}%
-                </span>
+                <div className="flex items-center gap-4">
+                  <StreakTracker />
+                  <span className="text-sm text-muted-foreground">
+                    {Math.round(stats.progress)}%
+                  </span>
+                </div>
               </div>
-              <Progress value={stats.progress} className="h-2" aria-label="Postęp sesji" />
+              <div className="relative">
+                <Progress value={stats.progress} className="h-2" aria-label="Postęp sesji" />
+                <ProgressMilestones
+                  current={state.currentFlashcardIndex + 1}
+                  total={state.flashcards.length}
+                  className="absolute inset-0"
+                />
+              </div>
             </div>
             <Button
               variant="ghost"

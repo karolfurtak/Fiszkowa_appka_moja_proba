@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 
-import RegisterForm from '../components/forms/RegisterForm';
+import { RegisterPage } from '../components/auth/RegisterPage';
 import { Toaster } from '@/components/ui/sonner';
 
 // Sprawdzenie czy użytkownik jest już zalogowany
@@ -13,8 +13,8 @@ if (session) {
 }
 
 // Meta tagi
-const title = 'Rejestracja - 10xCards';
-const description = 'Utwórz konto w aplikacji 10xCards';
+const title = 'Rejestracja - Fiszki-MyAPP';
+const description = 'Utwórz konto w aplikacji Fiszki-MyAPP';
 ---
 
 <html lang="pl">
@@ -31,7 +31,7 @@ const description = 'Utwórz konto w aplikacji 10xCards';
         const darkModeStorage = localStorage.getItem('darkMode');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const shouldUseDark = darkModeStorage !== null ? darkModeStorage === 'true' : prefersDark;
-        
+
         if (shouldUseDark) {
           document.documentElement.classList.add('dark');
         } else {
@@ -40,11 +40,8 @@ const description = 'Utwórz konto w aplikacji 10xCards';
       })();
     </script>
   </head>
-  <body>
-    <main class="container mx-auto px-4 py-8 max-w-md">
-      <h1 class="text-3xl font-bold mb-6 text-center">Rejestracja</h1>
-      <RegisterForm client:load />
-    </main>
+  <body class="bg-background">
+    <RegisterPage client:load />
     <Toaster client:load />
   </body>
 </html>
@@ -52,4 +49,3 @@ const description = 'Utwórz konto w aplikacji 10xCards';
 <style is:global>
   @import '../styles/global.css';
 </style>
-

@@ -133,7 +133,7 @@ export const DeckCard = React.memo(function DeckCard({
 
   return (
     <Card
-      className="cursor-pointer transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+      className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
       tabIndex={0}
@@ -229,4 +229,3 @@ export const DeckCard = React.memo(function DeckCard({
     </Card>
   );
 });
-
