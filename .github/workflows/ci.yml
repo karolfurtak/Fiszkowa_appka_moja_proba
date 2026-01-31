@@ -9,6 +9,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+      OPENROUTER_API_KEY: placeholder-openrouter-key
 
     steps:
       - name: Checkout repo
@@ -26,4 +30,4 @@ jobs:
         run: npm run build
 
       - name: Run tests
-        run: npm test
+        run: npm run test:run
